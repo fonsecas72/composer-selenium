@@ -12,7 +12,8 @@ With Composer:
 
 ### Usage
 
-#### get selenium (will download to /opt/selenium-server-standalone.jar)
+#### get selenium 
+`(this will download to /opt/selenium-server-standalone.jar)`
 ```
 bin/selenium get (-s 2.44)
 ```
