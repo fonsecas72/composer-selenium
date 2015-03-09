@@ -1,0 +1,23 @@
+{
+    "name": "beubiqa/scripts",
+    "description": "",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hugo Fonseca",
+            "email": "hdtfonseca@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "BeubiQA\\": "src"
+        }
+    },
+    "require": {
+        "symfony/console": "~2.5",
+        "symfony/process": "~2.6"
+    },
+    "bin": [
+        "bin/selenium"
+    ]
+}
