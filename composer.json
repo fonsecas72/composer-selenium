@@ -1,6 +1,8 @@
 {
     "name": "fonsecas72/composer-selenium",
-    "description": "",
+    "type": "library",
+    "description": "Get, Start & Stop selenium with a composer package",
+    "keywords": ["selenium"],
     "license": "MIT",
     "authors": [
         {
