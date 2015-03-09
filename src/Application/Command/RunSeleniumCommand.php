@@ -58,22 +58,42 @@ class RunSeleniumCommand extends Command
             InputOption::VALUE_REQUIRED,
             '(start only) Set a custom selenium location'
         )
+        ->addOption(
+            'xvfb',
+            null,
+            InputOption::VALUE_REQUIRED,
+            '(start only) Use xvfb to start selenium'
+        )
         ->setDescription('This will start/stop Selenium2 server.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $root = __DIR__ . '/../../..';
         switch ($input->getArgument('action')) {
             case 'start':
-                $output->writeln('Starting...');
-                $seleniumLocation = $input->getOption('selenium-location') ?: '/opt/selenium-server-standalone.jar';
-                $xvfbCmd = 'DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1';
-                $cmd = $xvfbCmd.' java -jar '.$seleniumLocation;
+                $seleniumLocation = $input->getOption('selenium-location') ?: '/opt/selenium/selenium-server-standalone.jar';
+                if (!is_readable($seleniumLocation)) {
+                    throw new \RuntimeException('selenium jar not found - '.$seleniumLocation);
+                }
+                $cmd = 'java -jar '.$seleniumLocation;
+                if ($input->getOption('xvfb')) {
+                    $xvfbCmd = 'DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1';
+                    $cmd = $xvfbCmd.' '.$cmd;
+                }
                 if ($input->getOption('firefox-profile')) {
                     $cmd = $cmd.' -firefoxProfileTemplate '.$input->getOption('firefox-profile');
                 }
                 $cmd = $cmd.' > selenium.log 2> selenium.log &';
                 $this->runCmdToStdOut($cmd);
+                
+                $seleniumLog = file_get_contents($root.'/selenium.log');
+                $matches = array();
+                preg_match('/usr\/bin\/xvfb-run: not found/', $seleniumLog, $matches);
+                if (count($matches)) {
+                    throw new \RuntimeException('xvfb-run: not found');
+                }
+                
                 sleep(3);
                 if ($input->getOption('verbose')) {
                     $cmd = 'tail -f selenium.log';
@@ -81,16 +101,13 @@ class RunSeleniumCommand extends Command
                 }
                 break;
             case 'stop':
-                $output->writeln('Stopping...');
-                $cmd = 'curl -s http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer';
-                $this->runCmdToStdOut($cmd, true);
-                $cmd = 'sudo killall -9 Xvfb || true';
-                $this->runCmdToStdOut($cmd, true);
+                $cURL = curl_init('http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer');
+                curl_exec($cURL);
+                curl_close($cURL);
                 break;
             case 'get':
-                $output->writeln('Getting...');
                 $version = $input->getOption('selenium-version') ?: '2.44';
-                $destination = $input->getOption('selenium-destination') ?: '/opt/selenium-server-standalone.jar';
+                $destination = $input->getOption('selenium-destination') ?: '/opt/selenium';
                 $this->updateSelenium($input, $output, $version, $destination);
                 break;
             default:
@@ -101,8 +118,16 @@ class RunSeleniumCommand extends Command
 
     private function downloadFile(OutputInterface $output, $url, $outputFile)
     {
+        
+        $opts = array(
+            'http' => array(
+                'method' => "GET",
+                'header' => "Content-type: application/force-download",
+            )
+        );
+
         $progress = new ProgressBar($output);
-        $ctx = stream_context_create(array(), array('notification' => function ($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) use ($output, $progress) {
+        $ctx = stream_context_create($opts, array('notification' => function ($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) use ($output, $progress) {
             switch ($notification_code) {
                 case STREAM_NOTIFY_FILE_SIZE_IS:
                     $progress->start($bytes_max);
@@ -112,8 +137,7 @@ class RunSeleniumCommand extends Command
                     break;
             }
         }));
-        $file = file_get_contents($url, false, $ctx);
-        file_put_contents($outputFile, $file);
+        file_put_contents($outputFile, file_get_contents($url, false, $ctx));
         $progress->finish();
     }
 
