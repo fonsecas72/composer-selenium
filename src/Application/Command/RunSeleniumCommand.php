@@ -52,26 +52,44 @@ class RunSeleniumCommand extends Command
             InputOption::VALUE_REQUIRED,
             '(get only) Set a custom selenium destination'
         )
+        ->addOption(
+            'selenium-location',
+            'l',
+            InputOption::VALUE_REQUIRED,
+            '(start only) Set a custom selenium location'
+        )
         ->setDescription('This will start/stop Selenium2 server.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $root = __DIR__ . '/../../..';
-        $action = $input->getArgument('action');
-        $verboseCmd = !$input->getOption('verbose') ? '' : ' -v ';
-        $firefoxProfCmd = !$input->getOption('firefox-profile') ? '' : ' -p '.$input->getOption('firefox-profile');
-
-        switch ($action) {
+        switch ($input->getArgument('action')) {
             case 'start':
-                $cmd = $root.'/src/Scripts/selenium.sh -a start '.$verboseCmd.$firefoxProfCmd;
+                $output->writeln('Starting...');
+                $seleniumLocation = $input->getOption('selenium-location') ?: '/opt/selenium-server-standalone.jar';
+                $xvfbCmd = 'DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1';
+                $cmd = $xvfbCmd.' java -jar '.$seleniumLocation;
+                if ($input->getOption('firefox-profile')) {
+                    $cmd = $cmd.' -firefoxProfileTemplate '.$input->getOption('firefox-profile');
+                }
+                $cmd = $cmd.' > selenium.log 2> selenium.log &';
                 $this->runCmdToStdOut($cmd);
+                sleep(3);
+                if ($input->getOption('verbose')) {
+                    $cmd = 'tail -f selenium.log';
+                    $this->runCmdToStdOut($cmd);
+                }
                 break;
             case 'stop':
-                $cmd = $root.'/src/Scripts/selenium.sh -a stop '.$verboseCmd;
-                $this->runCmdToStdOut($cmd);
+                $output->writeln('Stopping...');
+                $cmd = 'curl -s http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer';
+                $this->runCmdToStdOut($cmd, true);
+                $cmd = 'sudo killall -9 Xvfb || true';
+                $this->runCmdToStdOut($cmd, true);
                 break;
             case 'get':
+                $output->writeln('Getting...');
                 $version = $input->getOption('selenium-version') ?: '2.44';
                 $destination = $input->getOption('selenium-destination') ?: __DIR__ . '/../../../bin';
                 $this->updateSelenium($input, $output, $version, $destination);
@@ -79,6 +97,7 @@ class RunSeleniumCommand extends Command
             default:
                 throw new \RuntimeException('Invalid Argument');
         }
+        $output->writeln('Done');
     }
 
     private function downloadFile(OutputInterface $output, $url, $outputFile)
@@ -117,14 +136,14 @@ class RunSeleniumCommand extends Command
         }
     }
 
-    private function runCmdToStdOut($cmd)
+    private function runCmdToStdOut($cmd, $tolerate = false)
     {
         $process = new Process($cmd);
         $process->setTimeout(null);
         $process->run(function ($type, $buffer) {
             echo $buffer;
         });
-        if (!$process->isSuccessful()) {
+        if ($tolerate === false && !$process->isSuccessful()) {
             throw new \RuntimeException(sprintf(
                 'An error occurred when executing the "%s" command.',
                 escapeshellarg($cmd)
