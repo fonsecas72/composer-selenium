@@ -63,7 +63,6 @@ class RunSeleniumCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $root = __DIR__ . '/../../..';
         switch ($input->getArgument('action')) {
             case 'start':
                 $output->writeln('Starting...');
@@ -91,7 +90,7 @@ class RunSeleniumCommand extends Command
             case 'get':
                 $output->writeln('Getting...');
                 $version = $input->getOption('selenium-version') ?: '2.44';
-                $destination = $input->getOption('selenium-destination') ?: __DIR__ . '/../../../bin';
+                $destination = $input->getOption('selenium-destination') ?: '/opt/selenium-server-standalone.jar';
                 $this->updateSelenium($input, $output, $version, $destination);
                 break;
             default:
