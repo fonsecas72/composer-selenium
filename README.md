@@ -4,6 +4,8 @@ Get, Start &amp; Stop selenium with a composer package
 
 You can use this package to get, start and stop selenium server.
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fonsecas72/selenium-handler/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fonsecas72/selenium-handler/?branch=master)
+
 ### Installation
 
 With Composer:
