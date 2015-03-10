@@ -180,12 +180,6 @@ class RunSeleniumCommand extends Command
 
     public function handleStop(InputInterface $input, OutputInterface $output)
     {
-//        $curlUrl = $this->getSeleniumHostDriverURL().'?cmd=shutDownSeleniumServer';
-//        var_dump($curlUrl);
-//        $cURL = curl_init($curlUrl);
-//        $res = curl_exec($cURL);
-//        curl_close($cURL);
-
         $this->waitForCurlToReturn(
             false,
             $output,
@@ -233,7 +227,7 @@ class RunSeleniumCommand extends Command
         $progress = new ProgressBar($output, 35000000); // ~ 35Mb
         $ctx = stream_context_create(
             $opts,
-            array('notification' => 
+            array('notification' =>
                 function ($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) use ($output, $progress) {
                     switch ($notification_code) {
                         case STREAM_NOTIFY_FILE_SIZE_IS:
@@ -243,7 +237,9 @@ class RunSeleniumCommand extends Command
                             $progress->setCurrent($bytes_transferred);
                             break;
                     }
-        }));
+                }
+            )
+        );
         file_put_contents($outputFile, file_get_contents($url, false, $ctx));
         $progress->finish();
     }
