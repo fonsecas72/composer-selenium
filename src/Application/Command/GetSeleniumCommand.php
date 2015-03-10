@@ -50,7 +50,7 @@ class GetSeleniumCommand extends SeleniumCommand
     {
         $version = $input->getOption('selenium-version') ?: '2.44';
         $destination = $input->getOption('selenium-destination') ?: '/opt/selenium';
-        $this->updateSelenium($input, $output, $version, $destination);
+        $this->updateSelenium($output, $version, $destination);
         $output->writeln("\nDone");
     }
 
@@ -73,7 +73,7 @@ class GetSeleniumCommand extends SeleniumCommand
      * @throws \RuntimeException
      * @throws \LogicException
      */
-    private function updateSelenium(InputInterface $input, OutputInterface $output, $version, $destination)
+    private function updateSelenium(OutputInterface $output, $version, $destination)
     {
         if (!is_writable(dirname($destination))) {
             throw new \RuntimeException('Not enought permissions. Try with sudo.');

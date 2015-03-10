@@ -57,7 +57,7 @@ class StartSeleniumCommand extends SeleniumCommand
         if (!is_readable($seleniumLocation)) {
             throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
         }
-        $startSeleniumCmd = $this->getSeleniumStartCommand($input, $output, $seleniumLocation);
+        $startSeleniumCmd = $this->getSeleniumStartCommand($input, $seleniumLocation);
         $this->runCmdToStdOut($startSeleniumCmd);
         $res = $this->waitForSeleniumOn($output);
         if (true !== $res) {
@@ -77,7 +77,7 @@ class StartSeleniumCommand extends SeleniumCommand
      * @param string $seleniumLocation
      * @return string
      */
-    private function getSeleniumStartCommand(InputInterface $input, OutputInterface $output, $seleniumLocation)
+    private function getSeleniumStartCommand(InputInterface $input, $seleniumLocation)
     {
         $cmd = 'java -jar '.$seleniumLocation;
         if ($input->getOption('xvfb')) {
