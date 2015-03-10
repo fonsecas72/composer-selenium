@@ -8,7 +8,7 @@ You can use this package to get, start and stop selenium server.
 
 With Composer:
 ```
-  composer require 'fonsecas72/composer-selenium'
+  composer require 'fonsecas72/selenium-handler'
 ```
 
 ### Usage
