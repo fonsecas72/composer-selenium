@@ -8,15 +8,14 @@
 
 namespace BeubiQA\Application\Command;
 
-use Symfony\Component\Console\Command\Command;
+use BeubiQA\Application\Command\SeleniumCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\ProgressBar;
 
-class GetSeleniumCommand extends Command
+class GetSeleniumCommand extends SeleniumCommand
 {
-
     /**
      * Command configuration
      *
@@ -49,20 +48,20 @@ class GetSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->handleGet($input, $output);
+        $version = $input->getOption('selenium-version') ?: '2.44';
+        $destination = $input->getOption('selenium-destination') ?: '/opt/selenium';
+        $this->updateSelenium($input, $output, $version, $destination);
         $output->writeln("\nDone");
     }
 
     /**
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param string $version e.g. "2.44"
+     * @return string
      */
-    public function handleGet(InputInterface $input, OutputInterface $output)
+    public function getSeleniumDownloadURL($version)
     {
-        $version = $input->getOption('selenium-version') ?: '2.44';
-        $destination = $input->getOption('selenium-destination') ?: '/opt/selenium';
-        $this->updateSelenium($input, $output, $version, $destination);
+        return 'http://selenium-release.storage.googleapis.com/'.$version.'/selenium-server-standalone-'.$version.'.0.jar';
     }
 
     /**
@@ -123,15 +122,5 @@ class GetSeleniumCommand extends Command
         );
         file_put_contents($outputFile, file_get_contents($url, false, $ctx));
         $progress->finish();
-    }
-
-    /**
-     *
-     * @param string $version e.g. "2.44"
-     * @return string
-     */
-    public function getSeleniumDownloadURL($version)
-    {
-        return 'http://selenium-release.storage.googleapis.com/'.$version.'/selenium-server-standalone-'.$version.'.0.jar';
     }
 }

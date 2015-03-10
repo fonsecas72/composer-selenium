@@ -8,14 +8,12 @@
 
 namespace BeubiQA\Application\Command;
 
-use Symfony\Component\Console\Command\Command;
+use BeubiQA\Application\Command\SeleniumCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
-class ShowSeleniumCommand extends Command
+class ShowSeleniumCommand extends SeleniumCommand
 {
-
     /**
      * Command configuration
      *
@@ -36,37 +34,7 @@ class ShowSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->handleShow($input, $output);
-        $output->writeln("\nDone");
-    }
-
-    public function handleShow(InputInterface $input, OutputInterface $output)
-    {
-        $this->tailSeleniumLog();
-    }
-
-    private function tailSeleniumLog()
-    {
         $this->runCmdToStdOut('tail -f selenium.log');
-    }
-
-    /**
-     *
-     * @param string $cmd
-     * @param boolean $tolerate whether to throw exception on failure or not
-     */
-    private function runCmdToStdOut($cmd, $tolerate = false)
-    {
-        $process = new Process($cmd);
-        $process->setTimeout(null);
-        $process->run(function ($type, $buffer) {
-            echo $buffer;
-        });
-        if ($tolerate === false && !$process->isSuccessful()) {
-            throw new \RuntimeException(sprintf(
-                'An error occurred when executing the "%s" command.',
-                escapeshellarg($cmd)
-            ));
-        }
+        $output->writeln("\nDone");
     }
 }

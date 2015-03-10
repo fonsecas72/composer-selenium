@@ -8,28 +8,13 @@
 
 namespace BeubiQA\Application\Command;
 
-use Symfony\Component\Console\Command\Command;
+use BeubiQA\Application\Command\SeleniumCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Helper\ProgressBar;
 
-class StartSeleniumCommand extends Command
+class StartSeleniumCommand extends SeleniumCommand
 {
-    /**
-     * @var integer
-     */
-    public $seleniumStartTimeout = 5000000; // 5 seconds
-    /**
-     * @var integer
-     */
-    public $seleniumStartWaitInterval = 25000; // 0.025 seconds
-    /**
-     * @var integer
-     */
-    public $port = 4444;
-
     /**
      * Command configuration
      *
@@ -68,18 +53,6 @@ class StartSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->handleStart($input, $output);
-        $output->writeln("\nDone");
-    }
-    
-    /**
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @throws \RuntimeException
-     */
-    public function handleStart(InputInterface $input, OutputInterface $output)
-    {
         $seleniumLocation = $input->getOption('selenium-location') ? : '/opt/selenium/selenium-server-standalone.jar';
         if (!is_readable($seleniumLocation)) {
             throw new \RuntimeException('Selenium jar not found - ' . $seleniumLocation);
@@ -94,8 +67,9 @@ class StartSeleniumCommand extends Command
         if ($input->getOption('verbose')) {
             $this->tailSeleniumLog();
         }
+        $output->writeln("\nDone");
     }
-
+    
     /**
      *
      * @param InputInterface $input
@@ -118,15 +92,6 @@ class StartSeleniumCommand extends Command
     }
     
     /**
-     *
-     * @return string
-     */
-    private function getSeleniumHostDriverURL()
-    {
-        return 'http://localhost:'.$this->port.'/selenium-server/driver/';
-    }
-
-    /**
      * Will wait until the selenium is started or timeout
      *
      * @param OutputInterface $output
@@ -145,44 +110,6 @@ class StartSeleniumCommand extends Command
 
     /**
      *
-     * @param boolean $expectedReturnStatus
-     * @param OutputInterface $output
-     * @param string $url
-     * @param int $timeout
-     * @param int $waitInterval
-     * @return boolean whether if the expectedReturn was successful or not
-     */
-    private function waitForCurlToReturn($expectedReturnStatus, OutputInterface $output, $url, $timeout, $waitInterval)
-    {
-        $timeLeft = $timeout;
-        $progress = new ProgressBar($output, $timeout);
-        $progress->start();
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        while (true) {
-            $status = curl_exec($ch);
-            if (false !== $status && $expectedReturnStatus !== false
-             || $status === $expectedReturnStatus
-            ) {
-                break;
-            }
-            $timeLeft -= $waitInterval;
-            if ($timeout < 0) {
-                $output->writeln('Timeout to curl: '.$url);
-                
-                return false;
-            }
-            usleep($waitInterval);
-            $progress->setProgress($timeout - $timeLeft);
-        }
-        $progress->finish();
-        curl_close($ch);
-
-        return true;
-    }
-
-    /**
-     *
      * @param InputInterface $input
      * @param OutputInterface $output
      * @throws \RuntimeException
@@ -196,26 +123,6 @@ class StartSeleniumCommand extends Command
             if (count($matches)) {
                 $output->writeln('xvfb-run: not found');
             }
-        }
-    }
-
-    /**
-     *
-     * @param string $cmd
-     * @param boolean $tolerate whether to throw exception on failure or not
-     */
-    private function runCmdToStdOut($cmd, $tolerate = false)
-    {
-        $process = new Process($cmd);
-        $process->setTimeout(null);
-        $process->run(function ($type, $buffer) {
-            echo $buffer;
-        });
-        if ($tolerate === false && !$process->isSuccessful()) {
-            throw new \RuntimeException(sprintf(
-                'An error occurred when executing the "%s" command.',
-                escapeshellarg($cmd)
-            ));
         }
     }
 }

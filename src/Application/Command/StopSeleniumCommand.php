@@ -8,18 +8,12 @@
 
 namespace BeubiQA\Application\Command;
 
-use Symfony\Component\Console\Command\Command;
+use BeubiQA\Application\Command\SeleniumCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\ProgressBar;
 
-class StopSeleniumCommand extends Command
+class StopSeleniumCommand extends SeleniumCommand
 {
-    /**
-     * @var integer
-     */
-    public $port = 4444;
-    
     /**
      * Command configuration
      *
@@ -40,17 +34,6 @@ class StopSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->handleStop($input, $output);
-        $output->writeln("\nDone");
-    }
-
-    /**
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
-    public function handleStop(InputInterface $input, OutputInterface $output)
-    {
         $this->waitForCurlToReturn(
             false,
             $output,
@@ -58,52 +41,6 @@ class StopSeleniumCommand extends Command
             $this->seleniumStartTimeout,
             $this->seleniumStartWaitInterval
         );
-    }
-
-    /**
-     *
-     * @return string
-     */
-    private function getSeleniumHostDriverURL()
-    {
-        return 'http://localhost:'.$this->port.'/selenium-server/driver/';
-    }
-
-    /**
-     *
-     * @param boolean $expectedReturnStatus
-     * @param OutputInterface $output
-     * @param string $url
-     * @param int $timeout
-     * @param int $waitInterval
-     * @return boolean whether if the expectedReturn was successful or not
-     */
-    private function waitForCurlToReturn($expectedReturnStatus, OutputInterface $output, $url, $timeout, $waitInterval)
-    {
-        $timeLeft = $timeout;
-        $progress = new ProgressBar($output, $timeout);
-        $progress->start();
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        while (true) {
-            $status = curl_exec($ch);
-            if (false !== $status && $expectedReturnStatus !== false
-             || $status === $expectedReturnStatus
-            ) {
-                break;
-            }
-            $timeLeft -= $waitInterval;
-            if ($timeout < 0) {
-                $output->writeln('Timeout to curl: '.$url);
-                
-                return false;
-            }
-            usleep($waitInterval);
-            $progress->setProgress($timeout - $timeLeft);
-        }
-        $progress->finish();
-        curl_close($ch);
-
-        return true;
+        $output->writeln("\nDone");
     }
 }
