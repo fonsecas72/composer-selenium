@@ -88,9 +88,21 @@ class RunSeleniumCommand extends Command
         return $cmd.' > selenium.log 2> selenium.log &';
     }
 
+    /**
+     * @var integer
+     */
     public $seleniumStartTimeout = 5000000; // 5 seconds
+
+    /**
+     * @var integer
+     */
     public $seleniumStartWaitInterval = 25000; // 0.025 seconds
+
+    /**
+     * @var integer
+     */
     public $port = 4444;
+    
     /**
      *
      * @return string
@@ -119,11 +131,11 @@ class RunSeleniumCommand extends Command
 
     /**
      *
-     * @param type $expectedReturnStatus
+     * @param boolean $expectedReturnStatus
      * @param OutputInterface $output
-     * @param type $url
-     * @param type $timeout
-     * @param type $waitInterval
+     * @param string $url
+     * @param int $timeout
+     * @param int $waitInterval
      * @return boolean whether if the expectedReturn was successful or not
      */
     private function waitForCurlToReturn($expectedReturnStatus, OutputInterface $output, $url, $timeout, $waitInterval)
@@ -300,7 +312,7 @@ class RunSeleniumCommand extends Command
 
     /**
      *
-     * @param type $version e.g. "2.44"
+     * @param string $version e.g. "2.44"
      * @return string
      */
     public function getSeleniumDownloadURL($version)
