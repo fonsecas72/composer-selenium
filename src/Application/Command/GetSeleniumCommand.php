@@ -85,7 +85,7 @@ class GetSeleniumCommand extends SeleniumCommand
         $output->writeln('Done');
 
         if (!file_exists($outputFile)) {
-            throw new \LogicException('Something wrong happent: ' . $outputFile);
+            throw new \LogicException('Something wrong happent: '.$outputFile);
         }
     }
     
@@ -107,7 +107,7 @@ class GetSeleniumCommand extends SeleniumCommand
         $ctx = stream_context_create(
             $opts,
             array('notification' =>
-                function ($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) use ($output, $progress) {
+                function($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) use ($output, $progress) {
                     switch ($notification_code) {
                         case STREAM_NOTIFY_FILE_SIZE_IS:
                             $progress->start($bytes_max);
