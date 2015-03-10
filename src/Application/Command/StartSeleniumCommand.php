@@ -73,7 +73,6 @@ class StartSeleniumCommand extends SeleniumCommand
     /**
      *
      * @param InputInterface $input
-     * @param OutputInterface $output
      * @param string $seleniumLocation
      * @return string
      */

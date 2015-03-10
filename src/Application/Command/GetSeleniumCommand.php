@@ -66,7 +66,6 @@ class GetSeleniumCommand extends SeleniumCommand
 
     /**
      *
-     * @param InputInterface $input
      * @param OutputInterface $output
      * @param string $version e.g. "2.44"
      * @param string $destination
