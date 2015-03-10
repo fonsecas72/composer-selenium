@@ -1,5 +1,5 @@
 {
-    "name": "fonsecas72/composer-selenium",
+    "name": "fonsecas72/selenium-handler",
     "type": "library",
     "description": "Get, Start & Stop selenium with a composer package",
     "keywords": ["selenium"],
