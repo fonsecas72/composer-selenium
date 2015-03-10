@@ -53,9 +53,9 @@ class StartSeleniumCommand extends SeleniumCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $seleniumLocation = $input->getOption('selenium-location') ? : '/opt/selenium/selenium-server-standalone.jar';
+        $seleniumLocation = $input->getOption('selenium-location') ?: '/opt/selenium/selenium-server-standalone.jar';
         if (!is_readable($seleniumLocation)) {
-            throw new \RuntimeException('Selenium jar not found - ' . $seleniumLocation);
+            throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
         }
         $startSeleniumCmd = $this->getSeleniumStartCommand($input, $output, $seleniumLocation);
         $this->runCmdToStdOut($startSeleniumCmd);
