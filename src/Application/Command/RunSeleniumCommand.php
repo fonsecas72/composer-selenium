@@ -61,7 +61,7 @@ class RunSeleniumCommand extends Command
         ->addOption(
             'xvfb',
             null,
-            InputOption::VALUE_REQUIRED,
+            InputOption::VALUE_NONE,
             '(start only) Use xvfb to start selenium'
         )
         ->setDescription('This will start/stop Selenium2 server.');
