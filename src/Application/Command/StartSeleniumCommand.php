@@ -65,7 +65,7 @@ class StartSeleniumCommand extends SeleniumCommand
             throw new \RuntimeException('Selenium hasn\'t started successfully.');
         }
         if ($input->getOption('verbose')) {
-            $this->tailSeleniumLog();
+            $this->runCmdToStdOut('tail -f selenium.log');
         }
         $output->writeln("\nDone");
     }
