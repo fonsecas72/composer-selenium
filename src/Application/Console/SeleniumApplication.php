@@ -15,22 +15,37 @@ use BeubiQA\Application\Command\RunSeleniumCommand;
 class SeleniumApplication extends Application
 {
 
+    /**
+     *
+     * @param InputInterface $input
+     * @return string
+     */
     protected function getCommandName(InputInterface $input)
     {
         return 'selenium';
     }
 
+    /**
+     *
+     * @return Command[]
+     */
     protected function getDefaultCommands()
     {
         $defaultCommands = parent::getDefaultCommands();
         $defaultCommands[] = new RunSeleniumCommand();
+        
         return $defaultCommands;
     }
 
+    /**
+     *
+     * @return InputDefinition
+     */
     public function getDefinition()
     {
         $inputDefinition = parent::getDefinition();
         $inputDefinition->setArguments();
+        
         return $inputDefinition;
     }
 }

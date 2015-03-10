@@ -67,6 +67,13 @@ class RunSeleniumCommand extends Command
         ->setDescription('This will start/stop Selenium2 server.');
     }
 
+    /**
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param string $seleniumLocation
+     * @return string
+     */
     private function getSeleniumStartCommand(InputInterface $input, OutputInterface $output, $seleniumLocation)
     {
         $cmd = 'java -jar '.$seleniumLocation;
@@ -84,6 +91,10 @@ class RunSeleniumCommand extends Command
     public $seleniumStartTimeout = 5000000; // 5 seconds
     public $seleniumStartWaitInterval = 25000; // 0.025 seconds
     public $port = 4444;
+    /**
+     *
+     * @return string
+     */
     private function getSeleniumHostDriverURL()
     {
         return 'http://localhost:'.$this->port.'/selenium-server/driver/';
@@ -106,6 +117,15 @@ class RunSeleniumCommand extends Command
         );
     }
 
+    /**
+     *
+     * @param type $expectedReturnStatus
+     * @param OutputInterface $output
+     * @param type $url
+     * @param type $timeout
+     * @param type $waitInterval
+     * @return boolean whether if the expectedReturn was successful or not
+     */
     private function waitForCurlToReturn($expectedReturnStatus, OutputInterface $output, $url, $timeout, $waitInterval)
     {
         $timeLeft = $timeout;
@@ -127,7 +147,7 @@ class RunSeleniumCommand extends Command
                 return false;
             }
             usleep($waitInterval);
-            $progress->setCurrent($timeout - $timeLeft);
+            $progress->setProgress($timeout - $timeLeft);
         }
         $progress->finish();
         curl_close($ch);
@@ -153,6 +173,12 @@ class RunSeleniumCommand extends Command
         }
     }
 
+    /**
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \RuntimeException
+     */
     public function handleStart(InputInterface $input, OutputInterface $output)
     {
         $seleniumLocation = $input->getOption('selenium-location') ? : '/opt/selenium/selenium-server-standalone.jar';
@@ -171,6 +197,11 @@ class RunSeleniumCommand extends Command
         }
     }
 
+    /**
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
     public function handleGet(InputInterface $input, OutputInterface $output)
     {
         $version = $input->getOption('selenium-version') ?: '2.44';
@@ -178,6 +209,11 @@ class RunSeleniumCommand extends Command
         $this->updateSelenium($input, $output, $version, $destination);
     }
 
+    /**
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
     public function handleStop(InputInterface $input, OutputInterface $output)
     {
         $this->waitForCurlToReturn(
@@ -194,6 +230,12 @@ class RunSeleniumCommand extends Command
         $this->tailSeleniumLog();
     }
 
+    /**
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \RuntimeException
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         switch ($input->getArgument('action')) {
@@ -221,7 +263,13 @@ class RunSeleniumCommand extends Command
     {
         $this->runCmdToStdOut('tail -f selenium.log');
     }
-    
+
+    /**
+     *
+     * @param OutputInterface $output
+     * @param string $url
+     * @param string $outputFile
+     */
     private function downloadFile(OutputInterface $output, $url, $outputFile)
     {
         $opts = array(
@@ -240,7 +288,7 @@ class RunSeleniumCommand extends Command
                             $progress->start($bytes_max);
                             break;
                         case STREAM_NOTIFY_PROGRESS:
-                            $progress->setCurrent($bytes_transferred);
+                            $progress->setProgress($bytes_transferred);
                             break;
                     }
                 }
@@ -250,11 +298,25 @@ class RunSeleniumCommand extends Command
         $progress->finish();
     }
 
+    /**
+     *
+     * @param type $version e.g. "2.44"
+     * @return string
+     */
     public function getSeleniumDownloadURL($version)
     {
         return 'http://selenium-release.storage.googleapis.com/'.$version.'/selenium-server-standalone-'.$version.'.0.jar';
     }
-    
+
+    /**
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param string $version e.g. "2.44"
+     * @param string $destination
+     * @throws \RuntimeException
+     * @throws \LogicException
+     */
     private function updateSelenium(InputInterface $input, OutputInterface $output, $version, $destination)
     {
         if (!is_writable(dirname($destination))) {
@@ -272,6 +334,11 @@ class RunSeleniumCommand extends Command
         }
     }
 
+    /**
+     *
+     * @param string $cmd
+     * @param boolean $tolerate whether to throw exception on failure or not
+     */
     private function runCmdToStdOut($cmd, $tolerate = false)
     {
         $process = new Process($cmd);
