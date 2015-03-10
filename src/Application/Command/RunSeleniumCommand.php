@@ -108,29 +108,29 @@ class RunSeleniumCommand extends Command
 
     private function waitForCurlToReturn($expectedReturnStatus, OutputInterface $output, $url, $timeout, $waitInterval)
     {
+        $timeLeft = $timeout;
         $progress = new ProgressBar($output, $timeout);
-        $progress->start($timeout);
-        $cURL = curl_init();
-        curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($cURL, CURLOPT_URL, $url);
+        $progress->start();
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         while (true) {
-            $status = curl_exec($cURL);
-            if (false !== $status && $expectedReturnStatus === true
-             || false === $status && $expectedReturnStatus === false
+            $status = curl_exec($ch);
+            if (false !== $status && $expectedReturnStatus !== false
+             || $status === $expectedReturnStatus
             ) {
                 break;
             }
-            $timeout -= $waitInterval;
+            $timeLeft -= $waitInterval;
             if ($timeout < 0) {
                 $output->writeln('Timeout to curl: '.$url);
                 
                 return false;
             }
             usleep($waitInterval);
-            $progress->setCurrent($waitInterval);
+            $progress->setCurrent($timeout - $timeLeft);
         }
         $progress->finish();
-        curl_close($cURL);
+        curl_close($ch);
 
         return true;
     }
@@ -189,6 +189,11 @@ class RunSeleniumCommand extends Command
         );
     }
 
+    public function handleShow(InputInterface $input, OutputInterface $output)
+    {
+        $this->tailSeleniumLog();
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         switch ($input->getArgument('action')) {
@@ -202,7 +207,7 @@ class RunSeleniumCommand extends Command
                 $this->handleStop($input, $output);
                 break;
             case 'show':
-                $this->tailSeleniumLog();
+                $this->handleShow($input, $output);
                 break;
             case null:
                 throw new \RuntimeException('Action must be start|stop|get|show');
@@ -216,6 +221,7 @@ class RunSeleniumCommand extends Command
     {
         $this->runCmdToStdOut('tail -f selenium.log');
     }
+    
     private function downloadFile(OutputInterface $output, $url, $outputFile)
     {
         $opts = array(
