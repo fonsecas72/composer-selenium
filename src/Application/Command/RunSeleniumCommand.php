@@ -86,7 +86,7 @@ class RunSeleniumCommand extends Command
     public $port = 4444;
     private function getSeleniumHostDriverURL()
     {
-        return 'http://localhost:'.$this->port.'/selenium-server/driver';
+        return 'http://localhost:'.$this->port.'/selenium-server/driver/';
     }
 
     /**
@@ -97,20 +97,41 @@ class RunSeleniumCommand extends Command
      */
     private function waitForSeleniumOn(OutputInterface $output)
     {
-        $cURL = curl_init($this->getSeleniumHostDriverURL().'?cmd=getLogMessages');
+        return $this->waitForCurlToReturn(
+            true,
+            $output,
+            $this->getSeleniumHostDriverURL().'?cmd=getLogMessages',
+            $this->seleniumStartTimeout,
+            $this->seleniumStartWaitInterval
+        );
+    }
+
+    private function waitForCurlToReturn($expectedReturnStatus, OutputInterface $output, $url, $timeout, $waitInterval)
+    {
+        $progress = new ProgressBar($output, $timeout);
+        $progress->start($timeout);
+        $cURL = curl_init();
+        curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($cURL, CURLOPT_URL, $url);
         while (true) {
             $status = curl_exec($cURL);
-            if ($status) {
+            if (false !== $status && $expectedReturnStatus === true
+             || false === $status && $expectedReturnStatus === false
+            ) {
                 break;
             }
-            $this->seleniumStartTimeout -= $this->seleniumStartWaitInterval;
-            if ($this->seleniumStartTimeout < 0) {
-                $output->writeln('Timeout to start selenium');
+            $timeout -= $waitInterval;
+            if ($timeout < 0) {
+                $output->writeln('Timeout to curl: '.$url);
+                
                 return false;
             }
-            usleep($this->seleniumStartWaitInterval);
+            usleep($waitInterval);
+            $progress->setCurrent($waitInterval);
         }
+        $progress->finish();
         curl_close($cURL);
+
         return true;
     }
 
@@ -132,35 +153,59 @@ class RunSeleniumCommand extends Command
         }
     }
 
+    public function handleStart(InputInterface $input, OutputInterface $output)
+    {
+        $seleniumLocation = $input->getOption('selenium-location') ? : '/opt/selenium/selenium-server-standalone.jar';
+        if (!is_readable($seleniumLocation)) {
+            throw new \RuntimeException('Selenium jar not found - ' . $seleniumLocation);
+        }
+        $startSeleniumCmd = $this->getSeleniumStartCommand($input, $output, $seleniumLocation);
+        $this->runCmdToStdOut($startSeleniumCmd);
+        $res = $this->waitForSeleniumOn($output);
+        if (true !== $res) {
+            $this->debugSeleniumNotStarted($input, $output);
+            throw new \RuntimeException('Selenium hasn\'t started successfully.');
+        }
+        if ($input->getOption('verbose')) {
+            $this->tailSeleniumLog();
+        }
+    }
 
+    public function handleGet(InputInterface $input, OutputInterface $output)
+    {
+        $version = $input->getOption('selenium-version') ?: '2.44';
+        $destination = $input->getOption('selenium-destination') ?: '/opt/selenium';
+        $this->updateSelenium($input, $output, $version, $destination);
+    }
+
+    public function handleStop(InputInterface $input, OutputInterface $output)
+    {
+//        $curlUrl = $this->getSeleniumHostDriverURL().'?cmd=shutDownSeleniumServer';
+//        var_dump($curlUrl);
+//        $cURL = curl_init($curlUrl);
+//        $res = curl_exec($cURL);
+//        curl_close($cURL);
+
+        $this->waitForCurlToReturn(
+            false,
+            $output,
+            $this->getSeleniumHostDriverURL().'?cmd=shutDownSeleniumServer',
+            $this->seleniumStartTimeout,
+            $this->seleniumStartWaitInterval
+        );
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         switch ($input->getArgument('action')) {
             case 'get':
-                $version = $input->getOption('selenium-version') ?: '2.44';
-                $destination = $input->getOption('selenium-destination') ?: '/opt/selenium';
-                $this->updateSelenium($input, $output, $version, $destination);
+                $this->handleGet($input, $output);
                 break;
             case 'start':
-                $seleniumLocation = $input->getOption('selenium-location') ?: '/opt/selenium/selenium-server-standalone.jar';
-                if (!is_readable($seleniumLocation)) {
-                    throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
-                }
-                $startSeleniumCmd = $this->getSeleniumStartCommand($input, $output, $seleniumLocation);
-                $this->runCmdToStdOut($startSeleniumCmd);
-                if (true !== $this->waitForSeleniumOn()) {
-                    $this->debugSeleniumNotStarted($input, $output);
-                    throw new \RuntimeException('Selenium hasn\'t started successfully.');
-                }
-                if ($input->getOption('verbose')) {
-                    $this->tailSeleniumLog();
-                }
+                $this->handleStart($input, $output);
                 break;
             case 'stop':
-                $cURL = curl_init($this->getSeleniumHostDriverURL().'?cmd=shutDownSeleniumServer');
-                curl_exec($cURL);
-                curl_close($cURL);
+                $this->handleStop($input, $output);
                 break;
             case 'show':
                 $this->tailSeleniumLog();
@@ -170,7 +215,7 @@ class RunSeleniumCommand extends Command
             default:
                 throw new \RuntimeException('Invalid Argument');
         }
-        $output->writeln('Done');
+        $output->writeln("\nDone");
     }
 
     private function tailSeleniumLog()
@@ -186,15 +231,18 @@ class RunSeleniumCommand extends Command
             )
         );
         $progress = new ProgressBar($output, 35000000); // ~ 35Mb
-        $ctx = stream_context_create($opts, array('notification' => function ($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) use ($output, $progress) {
-            switch ($notification_code) {
-                case STREAM_NOTIFY_FILE_SIZE_IS:
-                    $progress->start($bytes_max);
-                    break;
-                case STREAM_NOTIFY_PROGRESS:
-                    $progress->setCurrent($bytes_transferred);
-                    break;
-            }
+        $ctx = stream_context_create(
+            $opts,
+            array('notification' => 
+                function ($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) use ($output, $progress) {
+                    switch ($notification_code) {
+                        case STREAM_NOTIFY_FILE_SIZE_IS:
+                            $progress->start($bytes_max);
+                            break;
+                        case STREAM_NOTIFY_PROGRESS:
+                            $progress->setCurrent($bytes_transferred);
+                            break;
+                    }
         }));
         file_put_contents($outputFile, file_get_contents($url, false, $ctx));
         $progress->finish();
