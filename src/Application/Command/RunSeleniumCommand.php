@@ -31,8 +31,8 @@ class RunSeleniumCommand extends Command
         ->addArgument(
             'action',
             InputArgument::OPTIONAL,
-            'start|stop|get',
-            'start'
+            'start|stop|get|show',
+            null
         )
         ->addOption(
             'firefox-profile',
@@ -67,66 +67,125 @@ class RunSeleniumCommand extends Command
         ->setDescription('This will start/stop Selenium2 server.');
     }
 
+    private function getSeleniumStartCommand(InputInterface $input, OutputInterface $output, $seleniumLocation)
+    {
+        $cmd = 'java -jar '.$seleniumLocation;
+        if ($input->getOption('xvfb')) {
+            $xvfbCmd = 'DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1';
+            $cmd = $xvfbCmd.' '.$cmd;
+        }
+        if ($input->getOption('firefox-profile')) {
+            $cmd .= ' -firefoxProfileTemplate '.$input->getOption('firefox-profile');
+        }
+
+        return $cmd.' > selenium.log 2> selenium.log &';
+    }
+
+    public $seleniumStartTimeout = 5000000; // 5 seconds
+    public $seleniumStartWaitInterval = 25000; // 0.025 seconds
+    public $port = 4444;
+    private function getSeleniumHostDriverURL()
+    {
+        return 'http://localhost:'.$this->port.'/selenium-server/driver';
+    }
+
+    /**
+     * Will wait until the selenium is started or timeout
+     *
+     * @param OutputInterface $output
+     * @return boolean true if selenium is successfully started, false otherwise
+     */
+    private function waitForSeleniumOn(OutputInterface $output)
+    {
+        $cURL = curl_init($this->getSeleniumHostDriverURL().'?cmd=getLogMessages');
+        while (true) {
+            $status = curl_exec($cURL);
+            if ($status) {
+                break;
+            }
+            $this->seleniumStartTimeout -= $this->seleniumStartWaitInterval;
+            if ($this->seleniumStartTimeout < 0) {
+                $output->writeln('Timeout to start selenium');
+                return false;
+            }
+            usleep($this->seleniumStartWaitInterval);
+        }
+        curl_close($cURL);
+        return true;
+    }
+
+    /**
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \RuntimeException
+     */
+    private function debugSeleniumNotStarted(InputInterface $input, OutputInterface $output)
+    {
+        if ($input->getOption('xvfb')) {
+            $seleniumLog = file_get_contents('selenium.log');
+            $matches = array();
+            preg_match('/usr\/bin\/xvfb-run: not found/', $seleniumLog, $matches);
+            if (count($matches)) {
+                $output->writeln('xvfb-run: not found');
+            }
+        }
+    }
+
+
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $root = __DIR__ . '/../../..';
         switch ($input->getArgument('action')) {
-            case 'start':
-                $seleniumLocation = $input->getOption('selenium-location') ?: '/opt/selenium/selenium-server-standalone.jar';
-                if (!is_readable($seleniumLocation)) {
-                    throw new \RuntimeException('selenium jar not found - '.$seleniumLocation);
-                }
-                $cmd = 'java -jar '.$seleniumLocation;
-                if ($input->getOption('xvfb')) {
-                    $xvfbCmd = 'DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1';
-                    $cmd = $xvfbCmd.' '.$cmd;
-                }
-                if ($input->getOption('firefox-profile')) {
-                    $cmd = $cmd.' -firefoxProfileTemplate '.$input->getOption('firefox-profile');
-                }
-                $cmd = $cmd.' > selenium.log 2> selenium.log &';
-                $this->runCmdToStdOut($cmd);
-                
-                $seleniumLog = file_get_contents($root.'/selenium.log');
-                $matches = array();
-                preg_match('/usr\/bin\/xvfb-run: not found/', $seleniumLog, $matches);
-                if (count($matches)) {
-                    throw new \RuntimeException('xvfb-run: not found');
-                }
-                
-                sleep(3);
-                if ($input->getOption('verbose')) {
-                    $cmd = 'tail -f selenium.log';
-                    $this->runCmdToStdOut($cmd);
-                }
-                break;
-            case 'stop':
-                $cURL = curl_init('http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer');
-                curl_exec($cURL);
-                curl_close($cURL);
-                break;
             case 'get':
                 $version = $input->getOption('selenium-version') ?: '2.44';
                 $destination = $input->getOption('selenium-destination') ?: '/opt/selenium';
                 $this->updateSelenium($input, $output, $version, $destination);
                 break;
+            case 'start':
+                $seleniumLocation = $input->getOption('selenium-location') ?: '/opt/selenium/selenium-server-standalone.jar';
+                if (!is_readable($seleniumLocation)) {
+                    throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
+                }
+                $startSeleniumCmd = $this->getSeleniumStartCommand($input, $output, $seleniumLocation);
+                $this->runCmdToStdOut($startSeleniumCmd);
+                if (true !== $this->waitForSeleniumOn()) {
+                    $this->debugSeleniumNotStarted($input, $output);
+                    throw new \RuntimeException('Selenium hasn\'t started successfully.');
+                }
+                if ($input->getOption('verbose')) {
+                    $this->tailSeleniumLog();
+                }
+                break;
+            case 'stop':
+                $cURL = curl_init($this->getSeleniumHostDriverURL().'?cmd=shutDownSeleniumServer');
+                curl_exec($cURL);
+                curl_close($cURL);
+                break;
+            case 'show':
+                $this->tailSeleniumLog();
+                break;
+            case null:
+                throw new \RuntimeException('Action must be start|stop|get|show');
             default:
                 throw new \RuntimeException('Invalid Argument');
         }
         $output->writeln('Done');
     }
 
+    private function tailSeleniumLog()
+    {
+        $this->runCmdToStdOut('tail -f selenium.log');
+    }
     private function downloadFile(OutputInterface $output, $url, $outputFile)
     {
-        
         $opts = array(
             'http' => array(
                 'method' => "GET",
                 'header' => "Content-type: application/force-download",
             )
         );
-
-        $progress = new ProgressBar($output);
+        $progress = new ProgressBar($output, 35000000); // ~ 35Mb
         $ctx = stream_context_create($opts, array('notification' => function ($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) use ($output, $progress) {
             switch ($notification_code) {
                 case STREAM_NOTIFY_FILE_SIZE_IS:
@@ -141,6 +200,11 @@ class RunSeleniumCommand extends Command
         $progress->finish();
     }
 
+    public function getSeleniumDownloadURL($version)
+    {
+        return 'http://selenium-release.storage.googleapis.com/'.$version.'/selenium-server-standalone-'.$version.'.0.jar';
+    }
+    
     private function updateSelenium(InputInterface $input, OutputInterface $output, $version, $destination)
     {
         if (!is_writable(dirname($destination))) {
@@ -150,8 +214,7 @@ class RunSeleniumCommand extends Command
             mkdir($destination, 0777, true);
         }
         $outputFile = $destination.'/selenium-server-standalone.jar';
-        $url = 'http://selenium-release.storage.googleapis.com/' . $version . '/selenium-server-standalone-' . $version . '.0.jar';
-        $this->downloadFile($output, $url, $outputFile);
+        $this->downloadFile($output, $this->getSeleniumDownloadURL($version), $outputFile);
         $output->writeln('Done');
 
         if (!file_exists($outputFile)) {
