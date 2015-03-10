@@ -8,44 +8,19 @@
 
 namespace BeubiQA\Application\Console;
 
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Application;
-use BeubiQA\Application\Command\RunSeleniumCommand;
+use BeubiQA\Application\Command\StartSeleniumCommand;
+use BeubiQA\Application\Command\StopSeleniumCommand;
+use BeubiQA\Application\Command\GetSeleniumCommand;
 
 class SeleniumApplication extends Application
 {
 
-    /**
-     *
-     * @param InputInterface $input
-     * @return string
-     */
-    protected function getCommandName(InputInterface $input)
+    public function __construct($name, $version)
     {
-        return 'selenium';
-    }
-
-    /**
-     *
-     * @return Command[]
-     */
-    protected function getDefaultCommands()
-    {
-        $defaultCommands = parent::getDefaultCommands();
-        $defaultCommands[] = new RunSeleniumCommand();
-        
-        return $defaultCommands;
-    }
-
-    /**
-     *
-     * @return InputDefinition
-     */
-    public function getDefinition()
-    {
-        $inputDefinition = parent::getDefinition();
-        $inputDefinition->setArguments();
-        
-        return $inputDefinition;
+        parent::__construct($name = 'selenium', $version = '0.1');
+        $this->add(new StartSeleniumCommand());
+        $this->add(new StopSeleniumCommand());
+        $this->add(new GetSeleniumCommand());
     }
 }
