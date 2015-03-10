@@ -74,7 +74,7 @@ class SeleniumCommand extends Command
     {
         $process = new Process($cmd);
         $process->setTimeout(null);
-        $process->run(function ($type, $buffer) {
+        $process->run(function($type, $buffer) {
             echo $buffer;
         });
         if ($tolerate === false && !$process->isSuccessful()) {
