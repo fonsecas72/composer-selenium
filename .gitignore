@@ -1,0 +1,4 @@
+vendor
+selenium.log
+tests/Resources/firefoxProfile
+bin/selenium-server-standalone.jar
