@@ -1,6 +1,6 @@
 # Selenium Handler
 
-Get, Start &amp; Stop selenium with a composer package
+Get, Start &amp; Stop selenium server
 
 You can use this package to get, start and stop selenium server.
 
