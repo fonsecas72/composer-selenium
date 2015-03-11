@@ -12,7 +12,7 @@ class SeleniumCommand extends Command
     /**
      * @var integer
      */
-    public $seleniumStartTimeout = 5000000; // 5 seconds
+    public $seleniumStartTimeout = 10000000; // 10 seconds
     /**
      * @var integer
      */
