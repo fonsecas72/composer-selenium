@@ -5,37 +5,10 @@ namespace BeubiQA\Tests;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use BeubiQA\Application\Console\SeleniumApplication;
+use BeubiQA\Tests\SeleniumTestCase;
 
-class FunctionalTest extends \PHPUnit_Framework_TestCase
+class FunctionalTest extends SeleniumTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-        $app = new SeleniumApplication();
-        $app->get('stop')->run(
-            new ArrayInput(array('stop')),
-            new BufferedOutput()
-        );
-        $this->assertSeleniumIsNotRunning();
-    }
-    private function assertSeleniumIsRunning()
-    {
-        $this->assertNotFalse($this->getSeleniumStatus());
-    }
-    private function assertSeleniumIsNotRunning()
-    {
-        $this->assertFalse($this->getSeleniumStatus());
-    }
-    private function getSeleniumStatus()
-    {
-        $ch = curl_init('http://localhost:4444/selenium-server/driver/?cmd=getLogMessages');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $status = curl_exec($ch);
-        curl_close($ch);
-        
-        return $status;
-    }
-    
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Not enough permissions
@@ -54,10 +27,6 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
             new BufferedOutput()
         );
     }
-    
-    private $seleniumJarLocation = 'bin/selenium-server-standalone.jar';
-    private $seleniumBasicCommand = 'java -jar bin/selenium-server-standalone.jar';
-    private $seleniumJarDir = 'bin/';
     
     public function test_Get_Will_Download_a_File()
     {
@@ -78,17 +47,10 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     
     public function test_Start_Works()
     {
-        $output = new BufferedOutput();
-        $app = new SeleniumApplication();
-        $app->get('start')->run(
-            new ArrayInput(
-                array(
-                    'start',
-                    '-l' => $this->seleniumJarLocation
-                )
-            ),
-            $output
-        );
+        $output = $this->startSelenium(array(
+            'start',
+            '-l' => $this->seleniumJarLocation
+        ));
         $this->assertSeleniumIsRunning();
         $this->assertContains($this->seleniumBasicCommand.' > selenium.log 2> selenium.log &', $output->fetch());
     }
@@ -99,16 +61,10 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
      */
     public function test_Start_Does_Not_Exists()
     {
-        $app = new SeleniumApplication();
-        $app->get('start')->run(
-            new ArrayInput(
-                array(
-                    'start',
-                    '-l' => 'no_selenium.jar'
-                )
-            ),
-            new BufferedOutput()
-        );
+        $output = $this->startSelenium(array(
+            'start',
+            '-l' => 'no_selenium.jar'
+        ));
     }
     
     /**
@@ -117,18 +73,11 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
      */
     public function test_Start_Cmd_Firefox_Profile_That_Does_Not_Exists()
     {
-        $output = new BufferedOutput();
-        $app = new SeleniumApplication();
-        $app->get('start')->run(
-            new ArrayInput(
-                array(
-                    'start',
-                    '-l' => $this->seleniumJarLocation,
-                    '-p' => '/sasa/',
-                )
-            ),
-            $output
-        );
+        $output = $this->startSelenium(array(
+            'start',
+            '-l' => $this->seleniumJarLocation,
+            '-p' => '/sasa/',
+        ));
         $this->assertSeleniumIsRunning();
         $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate /opt/fidd > selenium.log 2> selenium.log &', $output->fetch());
         $this->assertContains('Firefox profile template doesn\'t exist', $output->fetch());
@@ -136,37 +85,24 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     
     public function test_Start_Cmd_Firefox_Profile()
     {
-        $output = new BufferedOutput();
-        $app = new SeleniumApplication();
         $profileDirPath = __DIR__.'/Resources/firefoxProfile/';
-        $app->get('start')->run(
-            new ArrayInput(
-                array(
-                    'start',
-                    '-l' => $this->seleniumJarLocation,
-                    '-p' => $profileDirPath,
-                )
-            ),
-            $output
-        );
+        $output = $this->startSelenium(array(
+            'start',
+            '-l' => $this->seleniumJarLocation,
+            '-p' => $profileDirPath,
+        ));
+        
         $this->assertSeleniumIsRunning();
         $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log &', $output->fetch());
     }
     
     public function test_Start_Cmd_XVFB_Fail()
     {
-        $output = new BufferedOutput();
-        $app = new SeleniumApplication();
-        $app->get('start')->run(
-            new ArrayInput(
-                array(
-                    'start',
-                    '-l' => $this->seleniumJarLocation,
-                    '--xvfb' => true
-                )
-            ),
-            $output
-        );
+        $output = $this->startSelenium(array(
+            'start',
+            '-l' => $this->seleniumJarLocation,
+            '--xvfb' => true
+        ));
         $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 '.$this->seleniumBasicCommand, $output->fetch());
         $this->assertSeleniumIsRunning();
     }
