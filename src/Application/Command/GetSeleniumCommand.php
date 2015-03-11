@@ -75,7 +75,7 @@ class GetSeleniumCommand extends SeleniumCommand
     private function updateSelenium(OutputInterface $output, $version, $destination)
     {
         if (!is_writable(dirname($destination))) {
-            throw new \RuntimeException('Not enough permissions. Try with sudo.');
+            throw new \RuntimeException('Not enough permissions in '.$destination.". \nTry with sudo.");
         }
         if (!is_dir($destination)) {
             mkdir($destination, 0777, true);
@@ -85,7 +85,7 @@ class GetSeleniumCommand extends SeleniumCommand
         $output->writeln('Done');
 
         if (!file_exists($outputFile)) {
-            throw new \LogicException('Something wrong happent: '.$outputFile);
+            throw new \LogicException('Something wrong happent. The selenium file does not exists. '.$outputFile);
         }
     }
     
