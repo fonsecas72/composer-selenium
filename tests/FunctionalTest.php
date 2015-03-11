@@ -61,7 +61,7 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Start_Does_Not_Exists()
     {
-        $output = $this->startSelenium(array(
+        $this->startSelenium(array(
             'start',
             '-l' => 'no_selenium.jar'
         ));
