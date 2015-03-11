@@ -2,10 +2,10 @@
 
 namespace BeubiQA\Application\Command;
 
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 
 class SeleniumCommand extends Command
 {
@@ -27,9 +27,7 @@ class SeleniumCommand extends Command
      *
      * @param boolean $expectedReturnStatus
      * @param OutputInterface $output
-     * @param string $url
-     * @param int $timeout
-     * @param int $waitInterval
+     * @param string $seleniumCmd
      * @return boolean whether if the expectedReturn was successful or not
      */
     public function waitForSeleniumCurlToReturn($expectedReturnStatus, OutputInterface $output, $seleniumCmd)
@@ -65,7 +63,6 @@ class SeleniumCommand extends Command
     /**
      *
      * @param string $cmd
-     * @param boolean $tolerate whether to throw exception on failure or not
      */
     public function runCmdToStdOut($cmd)
     {
