@@ -20,19 +20,20 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     }
     private function assertSeleniumIsRunning()
     {
-        $ch = curl_init('http://localhost:4444/selenium-server/driver/?cmd=getLogMessages');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $status = curl_exec($ch);
-        $this->assertNotFalse($status);
-        curl_close($ch);
+        $this->assertNotFalse($this->getSeleniumStatus());
     }
     private function assertSeleniumIsNotRunning()
+    {
+        $this->assertFalse($this->getSeleniumStatus());
+    }
+    private function getSeleniumStatus()
     {
         $ch = curl_init('http://localhost:4444/selenium-server/driver/?cmd=getLogMessages');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $status = curl_exec($ch);
-        $this->assertFalse($status);
         curl_close($ch);
+        
+        return $status;
     }
     
     /**
@@ -54,44 +55,42 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         );
     }
     
+    private $seleniumJarLocation = 'bin/selenium-server-standalone.jar';
+    private $seleniumBasicCommand = 'java -jar bin/selenium-server-standalone.jar';
+    private $seleniumJarDir = 'bin/';
+    
     public function test_Get_Will_Download_a_File()
     {
-        $dir = 'bin/';
-        $jarExpectedLocation = $dir.'selenium-server-standalone.jar';
-        
         $app = new SeleniumApplication();
         $app->get('get')->run(
             new ArrayInput(
                 array(
                     'get',
-                    '-d' => $dir
+                    '-d' => $this->seleniumJarDir
                 )
             ),
             new BufferedOutput()
         );
         
-        $this->assertFileExists($jarExpectedLocation);
-        $this->assertEquals('deb2a8d4f6b5da90fd38d1915459ced2e53eb201', sha1_file($jarExpectedLocation));
+        $this->assertFileExists($this->seleniumJarLocation);
+        $this->assertEquals('deb2a8d4f6b5da90fd38d1915459ced2e53eb201', sha1_file($this->seleniumJarLocation));
     }
     
     public function test_Start_Works()
     {
-        $dir = 'bin/';
-        $jarExpectedLocation = $dir.'selenium-server-standalone.jar';
-        
         $output = new BufferedOutput();
         $app = new SeleniumApplication();
         $app->get('start')->run(
             new ArrayInput(
                 array(
                     'start',
-                    '-l' => $jarExpectedLocation
+                    '-l' => $this->seleniumJarLocation
                 )
             ),
             $output
         );
         $this->assertSeleniumIsRunning();
-        $this->assertContains('java -jar bin/selenium-server-standalone.jar > selenium.log 2> selenium.log &', $output->fetch());
+        $this->assertContains($this->seleniumBasicCommand.' > selenium.log 2> selenium.log &', $output->fetch());
     }
     
     /**
@@ -100,15 +99,12 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
      */
     public function test_Start_Does_Not_Exists()
     {
-        $dir = 'bin/';
-        $jarExpectedLocation = $dir.'no_selenium.jar';
-        
         $app = new SeleniumApplication();
         $app->get('start')->run(
             new ArrayInput(
                 array(
                     'start',
-                    '-l' => $jarExpectedLocation
+                    '-l' => 'no_selenium.jar'
                 )
             ),
             new BufferedOutput()
@@ -121,30 +117,25 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
      */
     public function test_Start_Cmd_Firefox_Profile_That_Does_Not_Exists()
     {
-        $dir = 'bin/';
-        $jarExpectedLocation = $dir.'selenium-server-standalone.jar';
-        
         $output = new BufferedOutput();
         $app = new SeleniumApplication();
         $app->get('start')->run(
             new ArrayInput(
                 array(
                     'start',
-                    '-l' => $jarExpectedLocation,
+                    '-l' => $this->seleniumJarLocation,
                     '-p' => '/sasa/',
                 )
             ),
             $output
         );
         $this->assertSeleniumIsRunning();
-        $this->assertContains('java -jar bin/selenium-server-standalone.jar -firefoxProfileTemplate /opt/fidd > selenium.log 2> selenium.log &', $output->fetch());
+        $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate /opt/fidd > selenium.log 2> selenium.log &', $output->fetch());
         $this->assertContains('Firefox profile template doesn\'t exist', $output->fetch());
     }
     
     public function test_Start_Cmd_Firefox_Profile()
     {
-        $dir = 'bin/';
-        $jarExpectedLocation = $dir.'selenium-server-standalone.jar';
         $output = new BufferedOutput();
         $app = new SeleniumApplication();
         $profileDirPath = __DIR__.'/Resources/firefoxProfile/';
@@ -152,33 +143,31 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
             new ArrayInput(
                 array(
                     'start',
-                    '-l' => $jarExpectedLocation,
+                    '-l' => $this->seleniumJarLocation,
                     '-p' => $profileDirPath,
                 )
             ),
             $output
         );
         $this->assertSeleniumIsRunning();
-        $this->assertContains('java -jar bin/selenium-server-standalone.jar -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log &', $output->fetch());
+        $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log &', $output->fetch());
     }
     
     public function test_Start_Cmd_XVFB_Fail()
     {
-        $dir = 'bin/';
-        $jarExpectedLocation = $dir.'selenium-server-standalone.jar';
         $output = new BufferedOutput();
         $app = new SeleniumApplication();
         $app->get('start')->run(
             new ArrayInput(
                 array(
                     'start',
-                    '-l' => $jarExpectedLocation,
+                    '-l' => $this->seleniumJarLocation,
                     '--xvfb' => true
                 )
             ),
             $output
         );
-        $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 java -jar', $output->fetch());
+        $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 '.$this->seleniumBasicCommand, $output->fetch());
         $this->assertSeleniumIsRunning();
     }
 }
