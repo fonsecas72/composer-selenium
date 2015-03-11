@@ -12,10 +12,6 @@ class SeleniumCommand extends Command
     /**
      * @var integer
      */
-    private $port = 4444;
-    /**
-     * @var integer
-     */
     public $seleniumStartTimeout = 5000000; // 5 seconds
     /**
      * @var integer
@@ -24,7 +20,7 @@ class SeleniumCommand extends Command
 
     public function getSeleniumHostDriverURL()
     {
-        return 'http://localhost:'.$this->port.'/selenium-server/driver/';
+        return 'http://localhost:4444/selenium-server/driver/';
     }
     
     /**
@@ -36,11 +32,12 @@ class SeleniumCommand extends Command
      * @param int $waitInterval
      * @return boolean whether if the expectedReturn was successful or not
      */
-    public function waitForCurlToReturn($expectedReturnStatus, OutputInterface $output, $url, $timeout, $waitInterval)
+    public function waitForSeleniumCurlToReturn($expectedReturnStatus, OutputInterface $output, $seleniumCmd)
     {
-        $timeLeft = $timeout;
-        $progress = new ProgressBar($output, $timeout);
+        $timeLeft = $this->seleniumStartTimeout;
+        $progress = new ProgressBar($output, $this->seleniumStartTimeout);
         $progress->start();
+        $url = $this->getSeleniumHostDriverURL().'?cmd='.$seleniumCmd;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         while (true) {
@@ -50,14 +47,14 @@ class SeleniumCommand extends Command
             ) {
                 break;
             }
-            $timeLeft -= $waitInterval;
+            $timeLeft -= $this->seleniumStartWaitInterval;
             if ($timeLeft < 0) {
                 $output->writeln('Timeout to curl: '.$url);
 
                 return false;
             }
-            usleep($waitInterval);
-            $progress->setProgress($timeout - $timeLeft);
+            usleep($this->seleniumStartWaitInterval);
+            $progress->setProgress($this->seleniumStartTimeout - $timeLeft);
         }
         $progress->finish();
         curl_close($ch);
@@ -70,18 +67,9 @@ class SeleniumCommand extends Command
      * @param string $cmd
      * @param boolean $tolerate whether to throw exception on failure or not
      */
-    public function runCmdToStdOut($cmd, $tolerate = false)
+    public function runCmdToStdOut($cmd)
     {
         $process = new Process($cmd);
-        $process->setTimeout(null);
-        $process->run(function($type, $buffer) {
-            echo $buffer;
-        });
-        if ($tolerate === false && !$process->isSuccessful()) {
-            throw new \RuntimeException(sprintf(
-                'An error occurred when executing the "%s" command.',
-                escapeshellarg($cmd)
-            ));
-        }
+        $process->start();
     }
 }

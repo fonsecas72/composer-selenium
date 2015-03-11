@@ -34,12 +34,10 @@ class StopSeleniumCommand extends SeleniumCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->waitForCurlToReturn(
+        $this->waitForSeleniumCurlToReturn(
             false,
             $output,
-            $this->getSeleniumHostDriverURL().'?cmd=shutDownSeleniumServer',
-            $this->seleniumStartTimeout,
-            $this->seleniumStartWaitInterval
+            'shutDownSeleniumServer'
         );
         $output->writeln("\nDone");
     }

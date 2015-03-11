@@ -102,12 +102,10 @@ class StartSeleniumCommand extends SeleniumCommand
      */
     private function waitForSeleniumOn(OutputInterface $output)
     {
-        return $this->waitForCurlToReturn(
+        return $this->waitForSeleniumCurlToReturn(
             true,
             $output,
-            $this->getSeleniumHostDriverURL().'?cmd=getLogMessages',
-            $this->seleniumStartTimeout,
-            $this->seleniumStartWaitInterval
+            'getLogMessages'
         );
     }
 
