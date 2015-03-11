@@ -47,7 +47,7 @@ class SeleniumCommand extends Command
             }
             $timeLeft -= $this->seleniumStartWaitInterval;
             if ($timeLeft < 0) {
-                $output->writeln('Timeout to curl: '.$url);
+                $output->writeln(PHP_EOL.'Timeout curling: '.$url);
 
                 return false;
             }
