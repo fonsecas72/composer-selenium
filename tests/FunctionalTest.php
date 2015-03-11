@@ -2,10 +2,10 @@
 
 namespace BeubiQA\Tests;
 
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use BeubiQA\Application\Console\SeleniumApplication;
 use BeubiQA\Tests\SeleniumTestCase;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class FunctionalTest extends SeleniumTestCase
 {
