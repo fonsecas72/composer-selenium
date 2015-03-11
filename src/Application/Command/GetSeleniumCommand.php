@@ -37,7 +37,7 @@ class GetSeleniumCommand extends SeleniumCommand
             InputOption::VALUE_REQUIRED,
             'Set a custom selenium destination'
         )
-        ->setDescription('This will start/stop Selenium2 server.');
+        ->setDescription('Downloads selenium server.');
     }
 
     /**

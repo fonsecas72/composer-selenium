@@ -23,7 +23,7 @@ class StopSeleniumCommand extends SeleniumCommand
     {
         $this
         ->setName('stop')
-        ->setDescription('This will start/stop Selenium2 server.');
+        ->setDescription('Stops selenium server.');
     }
 
     /**

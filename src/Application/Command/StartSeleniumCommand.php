@@ -42,7 +42,7 @@ class StartSeleniumCommand extends SeleniumCommand
             InputOption::VALUE_NONE,
             'Use xvfb to start selenium'
         )
-        ->setDescription('This will start Selenium2 server.');
+        ->setDescription('Starts selenium server.');
     }
 
     /**
