@@ -23,7 +23,7 @@ class ShowSeleniumCommand extends SeleniumCommand
     {
         $this
         ->setName('show')
-        ->setDescription('Shows selenium server log.');
+        ->setDescription('Shows selenium server log');
     }
 
     /**

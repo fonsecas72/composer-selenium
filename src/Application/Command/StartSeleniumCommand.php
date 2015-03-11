@@ -28,21 +28,21 @@ class StartSeleniumCommand extends SeleniumCommand
             'firefox-profile',
             'p',
             InputOption::VALUE_REQUIRED,
-            'Give a custom firefox profile location'
+            'Set a custom firefox profile location directory'
         )
         ->addOption(
             'selenium-location',
             'l',
             InputOption::VALUE_REQUIRED,
-            'Set a custom selenium location'
+            'Set a custom selenium jar location'
         )
         ->addOption(
             'xvfb',
             null,
             InputOption::VALUE_NONE,
-            'Use xvfb to start selenium'
+            'Use xvfb to start selenium server'
         )
-        ->setDescription('Starts selenium server.');
+        ->setDescription('Starts selenium server');
     }
 
     /**

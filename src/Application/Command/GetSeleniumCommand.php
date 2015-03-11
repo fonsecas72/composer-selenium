@@ -35,9 +35,9 @@ class GetSeleniumCommand extends SeleniumCommand
             'selenium-destination',
             'd',
             InputOption::VALUE_REQUIRED,
-            'Set a custom selenium destination'
+            'Set a custom selenium destination directory'
         )
-        ->setDescription('Downloads selenium server.');
+        ->setDescription('Downloads selenium server');
     }
 
     /**
