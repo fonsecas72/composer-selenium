@@ -5,6 +5,7 @@ namespace BeubiQA\Tests;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use BeubiQA\Application\Console\SeleniumApplication;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -48,11 +49,10 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     protected function startSelenium(array $options)
     {
         $output = new BufferedOutput();
+        $output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
         $app = new SeleniumApplication();
         $app->get('start')->run(
-            new ArrayInput(
-                $options
-            ),
+            new ArrayInput($options),
             $output
         );
         return $output;

@@ -58,8 +58,9 @@ class StartSeleniumCommand extends SeleniumCommand
             throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
         }
         $startSeleniumCmd = $this->getSeleniumStartCommand($input, $seleniumLocation);
-        // TODO:
-        $output->writeln($startSeleniumCmd);
+        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
+            $output->write($startSeleniumCmd);
+        }
         $this->runCmdToStdOut($startSeleniumCmd);
         $res = $this->waitForSeleniumOn($output);
         if (true !== $res) {
@@ -67,6 +68,7 @@ class StartSeleniumCommand extends SeleniumCommand
             throw new \RuntimeException('Selenium hasn\'t started successfully.');
         }
         if ($input->getOption('verbose')) {
+            $output->writeln(PHP_EOL);
             $this->runCmdToStdOut('tail -f selenium.log');
         }
         $output->writeln("\nDone");

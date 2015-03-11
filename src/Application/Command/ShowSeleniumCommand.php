@@ -23,7 +23,7 @@ class ShowSeleniumCommand extends SeleniumCommand
     {
         $this
         ->setName('show')
-        ->setDescription('Shows selenium server log');
+        ->setDescription('Displays selenium server log (tails the log file)');
     }
 
     /**
@@ -34,7 +34,7 @@ class ShowSeleniumCommand extends SeleniumCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln('Displaying selenium.log file:'.PHP_EOL);
         $this->runCmdToStdOut('tail -f selenium.log');
-        $output->writeln("\nDone");
     }
 }
