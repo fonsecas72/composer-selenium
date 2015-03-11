@@ -62,9 +62,9 @@ class StartSeleniumCommand extends SeleniumCommand
             $output->write($startSeleniumCmd);
         }
         $this->runCmdToStdOut($startSeleniumCmd);
-        $res = $this->waitForSeleniumOn($output);
+        $res = $this->waitForSeleniumCurlToReturn(true, $output, 'getLogMessages');
         if (true !== $res) {
-            $this->debugSeleniumNotStarted($input, $output);
+            $output->writeln(file_get_contents('selenium.log'));
             throw new \RuntimeException('Selenium hasn\'t started successfully.');
         }
         if ($input->getOption('verbose')) {
@@ -92,44 +92,5 @@ class StartSeleniumCommand extends SeleniumCommand
         }
 
         return $cmd.' > selenium.log 2> selenium.log &';
-    }
-    
-    /**
-     * Will wait until the selenium is started or timeout
-     *
-     * @param OutputInterface $output
-     * @return boolean true if selenium is successfully started, false otherwise
-     */
-    private function waitForSeleniumOn(OutputInterface $output)
-    {
-        return $this->waitForSeleniumCurlToReturn(
-            true,
-            $output,
-            'getLogMessages'
-        );
-    }
-
-    /**
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @throws \RuntimeException
-     */
-    private function debugSeleniumNotStarted(InputInterface $input, OutputInterface $output)
-    {
-        $seleniumLog = file_get_contents('selenium.log');
-        $matches = array();
-        if ($input->getOption('xvfb')) {
-            preg_match('/usr\/bin\/xvfb-run: not found/', $seleniumLog, $matches);
-            if (count($matches)) {
-                $output->writeln('xvfb-run: not found');
-            }
-        }
-        if ($input->getOption('firefox-profile')) {
-            preg_match('/Firefox profile template doesn\'t exist:/', $seleniumLog, $matches);
-            if (count($matches)) {
-                $output->writeln('Firefox profile template doesn\'t exist');
-            }
-        }
     }
 }
