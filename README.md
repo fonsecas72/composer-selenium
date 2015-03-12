@@ -44,9 +44,13 @@ bin/selenium start -l /someDir/selenium-server-standalone.jar
 
 Optionaly, you may choose whether or not you want to use xvfb
 ```
-bin/selenium start -xvfb
+bin/selenium start --xvfb
 ```
 
+You can even set the firefox profile to use
+```
+bin/selenium start --firefox-profile /someDir/toFirefoxProfile
+```
 
 #### stop selenium
 ```
