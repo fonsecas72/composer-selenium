@@ -42,7 +42,7 @@ You can give the selenium location with
 bin/selenium start -l /someDir/selenium-server-standalone.jar
 ```
 
-Optionaly, you may choose whether or not you want to use xvfb
+Optionally, you may choose whether or not you want to use xvfb
 ```
 bin/selenium start --xvfb
 ```
