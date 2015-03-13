@@ -43,7 +43,8 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     
     /**
      *
-     * @param array $options
+     * @param array $extraOptions
+     * @param array $defaultOptions
      * @return BufferedOutput
      */
     protected function startSelenium(
