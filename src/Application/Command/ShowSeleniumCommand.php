@@ -34,7 +34,7 @@ class ShowSeleniumCommand extends SeleniumCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('Displaying selenium.log file:'.PHP_EOL);
-        $this->runCmdToStdOut('tail -f selenium.log');
+        $output->writeln('Displaying '.$this->seleniumLogFile.' file:'.PHP_EOL);
+        $this->followFileContent($this->seleniumLogFile);
     }
 }

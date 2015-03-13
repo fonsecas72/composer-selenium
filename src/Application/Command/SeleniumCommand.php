@@ -5,19 +5,28 @@ namespace BeubiQA\Application\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class SeleniumCommand extends Command
 {
     /**
      * @var integer
      */
-    public $seleniumStartTimeout = 30000000; // 30 seconds
+    public $seleniumStartTimeout = 10000000; // 10 seconds
+    
     /**
      * @var integer
      */
     public $seleniumStartWaitInterval = 25000; // 0.025 seconds
+    
+    /**
+     * @var string
+     */
+    public $seleniumLogFile = 'selenium.log';
 
+    /**
+     *
+     * @return string
+     */
     public function getSeleniumHostDriverURL()
     {
         return 'http://localhost:4444/selenium-server/driver/';
@@ -59,14 +68,28 @@ class SeleniumCommand extends Command
 
         return true;
     }
-
+    
     /**
      *
-     * @param string $cmd
+     * @param string $file
      */
-    public function runCmdToStdOut($cmd)
+    public function followFileContent($file)
     {
-        $process = new Process($cmd);
-        $process->start();
+        $size = 0;
+        while (true) {
+            clearstatcache();
+            $currentSize = filesize($file);
+            if ($size === $currentSize) {
+                usleep(500);
+                continue;
+            }
+            $fh = fopen($file, 'r');
+            fseek($fh, $size);
+            while ($line = fgets($fh)) {
+                echo $line;
+            }
+            fclose($fh);
+            $size = $currentSize;
+        }
     }
 }

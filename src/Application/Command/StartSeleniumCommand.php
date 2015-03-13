@@ -42,6 +42,12 @@ class StartSeleniumCommand extends SeleniumCommand
             InputOption::VALUE_NONE,
             'Use xvfb to start selenium server'
         )
+        ->addOption(
+            'timeout',
+            't',
+            InputOption::VALUE_REQUIRED,
+            'Set how much you are willing to wait until selenium server is started (in seconds)'
+        )
         ->setDescription('Starts selenium server');
     }
 
@@ -54,6 +60,7 @@ class StartSeleniumCommand extends SeleniumCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $seleniumLocation = $input->getOption('selenium-location') ?: '/opt/selenium/selenium-server-standalone.jar';
+        $this->seleniumStartTimeout = $input->getOption('timeout') ? $input->getOption('timeout') * 1000000 : 30000000;
         if (!is_readable($seleniumLocation)) {
             throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
         }
@@ -61,15 +68,15 @@ class StartSeleniumCommand extends SeleniumCommand
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
             $output->write($startSeleniumCmd);
         }
-        $this->runCmdToStdOut($startSeleniumCmd);
+        exec($startSeleniumCmd);
         $res = $this->waitForSeleniumCurlToReturn(true, $output, 'getLogMessages');
         if (true !== $res) {
-            $output->writeln(file_get_contents('selenium.log'));
+            $output->writeln(file_get_contents($this->seleniumLogFile));
             throw new \RuntimeException('Selenium hasn\'t started successfully.');
         }
         if ($input->getOption('verbose')) {
             $output->writeln(PHP_EOL);
-            $this->runCmdToStdOut('tail -f selenium.log');
+            $this->followFileContent($this->seleniumLogFile);
         }
         $output->writeln("\nDone");
     }
@@ -91,6 +98,6 @@ class StartSeleniumCommand extends SeleniumCommand
             $cmd .= ' -firefoxProfileTemplate '.$input->getOption('firefox-profile');
         }
 
-        return $cmd.' > selenium.log 2> selenium.log &';
+        return $cmd.' > '.$this->seleniumLogFile.' 2> '.$this->seleniumLogFile.' &';
     }
 }
