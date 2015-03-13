@@ -47,10 +47,7 @@ class FunctionalTest extends SeleniumTestCase
     
     public function test_Start_Works()
     {
-        $output = $this->startSelenium(array(
-            'start',
-            '-l' => $this->seleniumJarLocation
-        ));
+        $output = $this->startSelenium();
         $this->assertSeleniumIsRunning();
         $this->assertContains($this->seleniumBasicCommand.' > selenium.log 2> selenium.log &', $output->fetch());
     }
@@ -61,10 +58,7 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Start_Does_Not_Exists()
     {
-        $this->startSelenium(array(
-            'start',
-            '-l' => 'no_selenium.jar'
-        ));
+        $this->startSelenium(array(), array('-l' => 'no_selenium.jar'));
     }
     
     /**
@@ -73,11 +67,7 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Start_Cmd_Firefox_Profile_That_Does_Not_Exists()
     {
-        $output = $this->startSelenium(array(
-            'start',
-            '-l' => $this->seleniumJarLocation,
-            '-p' => '/sasa/',
-        ));
+        $output = $this->startSelenium(array('-p' => '/sasa/'));
         $this->assertSeleniumIsRunning();
         $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate /opt/fidd > selenium.log 2> selenium.log &', $output->fetch());
         $this->assertContains('Firefox profile template doesn\'t exist', $output->fetch());
@@ -86,23 +76,15 @@ class FunctionalTest extends SeleniumTestCase
     public function test_Start_Cmd_Firefox_Profile()
     {
         $profileDirPath = __DIR__.'/Resources/firefoxProfile/';
-        $output = $this->startSelenium(array(
-            'start',
-            '-l' => $this->seleniumJarLocation,
-            '-p' => $profileDirPath,
-        ));
+        $output = $this->startSelenium(array('-p' => $profileDirPath));
         
         $this->assertSeleniumIsRunning();
         $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log &', $output->fetch());
     }
     
-    public function test_Start_Cmd_XVFB_Fail()
+    public function test_Start_Cmd_XVFB()
     {
-        $output = $this->startSelenium(array(
-            'start',
-            '-l' => $this->seleniumJarLocation,
-            '--xvfb' => true
-        ));
+        $output = $this->startSelenium(array('--xvfb' => true));
         $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 '.$this->seleniumBasicCommand, $output->fetch());
         $this->assertSeleniumIsRunning();
     }
@@ -113,11 +95,7 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Start_Cmd_With_Short_Timeout()
     {
-        $output = $this->startSelenium(array(
-            'start',
-            '-l' => $this->seleniumJarLocation,
-            '-t' => 0,
-        ));
+        $output = $this->startSelenium(array('-t' => 0));
         $this->assertSeleniumIsNotRunning();
         $this->assertContains('Timeout curling', $output->fetch());
     }

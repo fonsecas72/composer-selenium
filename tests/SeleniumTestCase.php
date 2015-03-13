@@ -46,8 +46,12 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
      * @param array $options
      * @return BufferedOutput
      */
-    protected function startSelenium(array $options)
-    {
+    protected function startSelenium(
+        array $extraOptions = array(),
+        array $defaultOptions = array('-l' => 'bin/selenium-server-standalone.jar')
+    ) {
+        $defaultOptions[] = 'start';
+        $options = array_merge($defaultOptions, $extraOptions);
         $output = new BufferedOutput();
         $output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
         $app = new SeleniumApplication();
