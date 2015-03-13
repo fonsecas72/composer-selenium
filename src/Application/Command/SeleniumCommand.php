@@ -11,12 +11,12 @@ class SeleniumCommand extends Command
     /**
      * @var integer
      */
-    public $seleniumStartTimeout = 10000000; // 10 seconds
+    public $seleniumCurlTimeout;
     
     /**
      * @var integer
      */
-    public $seleniumStartWaitInterval = 25000; // 0.025 seconds
+    public $seleniumCurlWaitInterval = 25000; // 0.025 seconds
     
     /**
      * @var string
@@ -34,6 +34,18 @@ class SeleniumCommand extends Command
     
     /**
      *
+     * @param int $userOption
+     */
+    protected function setSeleniumTimeout($userOption)
+    {
+        $this->seleniumCurlTimeout = 30000000;
+        if ($userOption !== false) {
+            $this->seleniumCurlTimeout = (int) $userOption * 1000000;
+        }
+    }
+    
+    /**
+     *
      * @param boolean $expectedReturnStatus
      * @param OutputInterface $output
      * @param string $seleniumCmd
@@ -41,8 +53,8 @@ class SeleniumCommand extends Command
      */
     public function waitForSeleniumCurlToReturn($expectedReturnStatus, OutputInterface $output, $seleniumCmd)
     {
-        $timeLeft = $this->seleniumStartTimeout;
-        $progress = new ProgressBar($output, $this->seleniumStartTimeout);
+        $timeLeft = $this->seleniumCurlTimeout;
+        $progress = new ProgressBar($output, $this->seleniumCurlTimeout);
         $progress->start();
         $url = $this->getSeleniumHostDriverURL().'?cmd='.$seleniumCmd;
         $ch = curl_init($url);
@@ -54,14 +66,14 @@ class SeleniumCommand extends Command
             ) {
                 break;
             }
-            $timeLeft -= $this->seleniumStartWaitInterval;
+            $timeLeft -= $this->seleniumCurlWaitInterval;
             if ($timeLeft < 0) {
                 $output->writeln(PHP_EOL.'Timeout curling: '.$url);
 
                 return false;
             }
-            usleep($this->seleniumStartWaitInterval);
-            $progress->setProgress($this->seleniumStartTimeout - $timeLeft);
+            usleep($this->seleniumCurlWaitInterval);
+            $progress->setProgress($this->seleniumCurlTimeout - $timeLeft);
         }
         $progress->finish();
         curl_close($ch);

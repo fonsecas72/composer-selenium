@@ -106,4 +106,19 @@ class FunctionalTest extends SeleniumTestCase
         $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 '.$this->seleniumBasicCommand, $output->fetch());
         $this->assertSeleniumIsRunning();
     }
+    
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Selenium hasn't started successfully.
+     */
+    public function test_Start_Cmd_With_Short_Timeout()
+    {
+        $output = $this->startSelenium(array(
+            'start',
+            '-l' => $this->seleniumJarLocation,
+            '-t' => 0,
+        ));
+        $this->assertSeleniumIsNotRunning();
+        $this->assertContains('Timeout curling', $output->fetch());
+    }
 }

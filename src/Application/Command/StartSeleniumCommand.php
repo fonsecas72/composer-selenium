@@ -46,7 +46,8 @@ class StartSeleniumCommand extends SeleniumCommand
             'timeout',
             't',
             InputOption::VALUE_REQUIRED,
-            'Set how much you are willing to wait until selenium server is started (in seconds)'
+            'Set how much you are willing to wait until selenium server is started (in seconds)',
+            false
         )
         ->setDescription('Starts selenium server');
     }
@@ -60,7 +61,7 @@ class StartSeleniumCommand extends SeleniumCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $seleniumLocation = $input->getOption('selenium-location') ?: '/opt/selenium/selenium-server-standalone.jar';
-        $this->seleniumStartTimeout = $input->getOption('timeout') ? $input->getOption('timeout') * 1000000 : 30000000;
+        $this->setSeleniumTimeout($input->getOption('timeout'));
         if (!is_readable($seleniumLocation)) {
             throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
         }
@@ -80,7 +81,7 @@ class StartSeleniumCommand extends SeleniumCommand
         }
         $output->writeln("\nDone");
     }
-    
+
     /**
      *
      * @param InputInterface $input

@@ -10,6 +10,7 @@ namespace BeubiQA\Application\Command;
 
 use BeubiQA\Application\Command\SeleniumCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class StopSeleniumCommand extends SeleniumCommand
@@ -23,7 +24,14 @@ class StopSeleniumCommand extends SeleniumCommand
     {
         $this
         ->setName('stop')
-        ->setDescription('Stops selenium server');
+        ->setDescription('Stops selenium server')
+        ->addOption(
+            'timeout',
+            't',
+            InputOption::VALUE_REQUIRED,
+            'Set how much you are willing to wait until selenium server is stopped (in seconds)',
+            false
+        );
     }
 
     /**
@@ -34,6 +42,7 @@ class StopSeleniumCommand extends SeleniumCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setSeleniumTimeout($input->getOption('timeout'));
         $this->waitForSeleniumCurlToReturn(
             false,
             $output,
