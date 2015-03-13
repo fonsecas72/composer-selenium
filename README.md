@@ -67,6 +67,4 @@ bin/selenium stop
 
 ##### Tips & Tricks
 
-* You can start selenium in verbose mode with ```-v```
-This will tail the selenium log.
-
+* If you start selenium in verbose mode with it will tail the selenium log for you.
