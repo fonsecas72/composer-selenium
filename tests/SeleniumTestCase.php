@@ -2,9 +2,9 @@
 
 namespace BeubiQA\Tests;
 
+use BeubiQA\Application\Console\SeleniumApplication;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use BeubiQA\Application\Console\SeleniumApplication;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
