@@ -43,7 +43,7 @@ bin/selenium start
 
 You can give the selenium location with
 ```
-bin/selenium start -l /someDir/selenium-server-standalone.jar
+bin/selenium start --selenium-location /someDir/selenium-server-standalone.jar
 ```
 
 Optionally, you may choose whether or not you want to use xvfb
@@ -51,10 +51,14 @@ Optionally, you may choose whether or not you want to use xvfb
 bin/selenium start --xvfb
 ```
 
-You can even set the firefox profile to use
+You can even set the firefox profile to use or set how much you are willing to wait for selenium to start (in seconds)
 ```
 bin/selenium start --firefox-profile /someDir/toFirefoxProfile
 ```
+```
+bin/selenium start --timeout 60
+```
+
 
 #### stop selenium
 ```
