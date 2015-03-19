@@ -18,6 +18,7 @@ php:
 
 before_script:
     - git clone https://github.com/fonsecas72/customfirefoxprofile.git tests/Resources/firefoxProfile/
+    - composer self-update
     - composer install
 
 script:
