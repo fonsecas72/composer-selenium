@@ -20,6 +20,12 @@ class StartSeleniumCommand extends SeleniumCommand
             'Set a custom firefox profile location directory'
         )
         ->addOption(
+            'chrome-driver',
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Set the chrome-driver path'
+        )
+        ->addOption(
             'selenium-location',
             'l',
             InputOption::VALUE_REQUIRED,
@@ -86,6 +92,9 @@ class StartSeleniumCommand extends SeleniumCommand
         }
         if ($input->getOption('firefox-profile')) {
             $cmd .= ' -firefoxProfileTemplate '.$input->getOption('firefox-profile');
+        }
+        if ($input->getOption('chrome-driver')) {
+            $cmd .= ' -Dwebdriver.chrome.driver='.$input->getOption('chrome-driver');
         }
 
         return $cmd.' > '.$this->seleniumLogFile.' 2> '.$this->seleniumLogFile.' &';
