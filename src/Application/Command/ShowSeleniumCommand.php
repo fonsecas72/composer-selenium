@@ -23,6 +23,9 @@ class ShowSeleniumCommand extends SeleniumCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!is_writable($this->seleniumLogFile)) {
+            throw new \RuntimeException('No permissions in '.$this->seleniumLogFile);
+        }
         $output->writeln('Displaying '.$this->seleniumLogFile.' file:'.PHP_EOL);
         $this->followFileContent($this->seleniumLogFile);
     }
