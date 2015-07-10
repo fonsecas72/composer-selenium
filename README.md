@@ -19,11 +19,11 @@ With Composer:
 
 ### Usage
 
-#### get selenium 
-`(it will download to /opt/selenium/selenium-server-standalone.jar by default so you may need sudo)`
+#### get selenium
+`(it will download to current directory by default)`
 
 ```
-bin/selenium get 
+bin/selenium get
 ```
 
 You can set the destination directory with
@@ -31,7 +31,7 @@ You can set the destination directory with
 bin/selenium get -d someDir/
 ```
 
-You can set the selenium version with 
+You can set the selenium version with
 ```
 bin/selenium get -s 2.44
 ```

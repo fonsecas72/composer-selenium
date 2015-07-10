@@ -38,7 +38,7 @@ class GetSeleniumCommand extends SeleniumCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $version = $input->getOption('selenium-version') ?: '2.44';
-        $destination = $input->getOption('selenium-destination') ?: '/opt/selenium';
+        $destination = $input->getOption('selenium-destination') ?: './';
         $this->updateSelenium($output, $version, $destination);
         $output->writeln("\nDone");
     }
@@ -77,7 +77,7 @@ class GetSeleniumCommand extends SeleniumCommand
             throw new \LogicException('Something wrong happent. The selenium file does not exists. '.$outputFile);
         }
     }
-    
+
     /**
      *
      * @param OutputInterface $output
