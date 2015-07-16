@@ -64,7 +64,7 @@ class SeleniumCommand extends Command
             try {
                 $res = $client->get($this->getSeleniumHostDriverURL(), [
                     'query' => ['cmd' => $seleniumCmd],
-                    'synchronous' => true,
+                    // 'synchronous' => true, // guzzle 6
                 ]);
             } catch (ConnectException $e) {
                 if ($expectedReturnStatus > 400) {
