@@ -97,6 +97,6 @@ class FunctionalTest extends SeleniumTestCase
     {
         $output = $this->startSelenium(array('-t' => 0));
         $this->assertSeleniumIsNotRunning();
-        $this->assertContains('Timeout curling', $output->fetch());
+        $this->assertContains('Timeout', $output->fetch());
     }
 }

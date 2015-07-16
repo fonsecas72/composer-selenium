@@ -70,7 +70,11 @@ class GetSeleniumCommand extends SeleniumCommand
             mkdir($destination, 0777, true);
         }
         $outputFile = $destination.'/selenium-server-standalone.jar';
-        $this->downloadFile($output, $this->getSeleniumDownloadURL($version), $outputFile);
+        if (!is_file($outputFile)) {
+            $this->downloadFile($output, $this->getSeleniumDownloadURL($version), $outputFile);
+        } else {
+            $output->write('Skipping download as the file already exists.');
+        }
         $output->writeln('Done');
 
         if (!file_exists($outputFile)) {

@@ -1,4 +1,4 @@
 vendor
 selenium.log
 tests/Resources/firefoxProfile
-bin/selenium-server-standalone.jar
+selenium-server-standalone.jar

@@ -68,7 +68,7 @@ class StartSeleniumCommand extends SeleniumCommand
             $output->write($startSeleniumCmd);
         }
         exec($startSeleniumCmd);
-        $res = $this->waitForSeleniumCurlToReturn(true, $output, 'getLogMessages');
+        $res = $this->orderAndWaitForIt(200, $output, 'getLogMessages');
         if (true !== $res) {
             $output->writeln(file_get_contents($this->seleniumLogFile));
             throw new \RuntimeException('Selenium hasn\'t started successfully.');

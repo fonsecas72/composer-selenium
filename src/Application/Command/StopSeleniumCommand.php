@@ -32,8 +32,8 @@ class StopSeleniumCommand extends SeleniumCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->setSeleniumTimeout($input->getOption('timeout'));
-        $this->waitForSeleniumCurlToReturn(
-            false,
+        $this->orderAndWaitForIt(
+            500,
             $output,
             'shutDownSeleniumServer'
         );
