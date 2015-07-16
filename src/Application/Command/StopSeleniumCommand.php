@@ -29,6 +29,7 @@ class StopSeleniumCommand extends SeleniumCommand
         try {
             $client->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'shutDownSeleniumServer']]);
         } catch (\Exception $exc) {
+            // we don't need to do anything here
         }
     }
 
