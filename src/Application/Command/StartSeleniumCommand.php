@@ -42,7 +42,7 @@ class StartSeleniumCommand extends SeleniumCommand
             't',
             InputOption::VALUE_REQUIRED,
             'Set how much you are willing to wait until selenium server is started (in seconds)',
-            false
+            30
         )
         ->setDescription('Starts selenium server');
     }
@@ -68,8 +68,8 @@ class StartSeleniumCommand extends SeleniumCommand
             $output->write($startSeleniumCmd);
         }
         exec($startSeleniumCmd);
-        $res = $this->orderAndWaitForIt(200, $output, 'getLogMessages');
-        if (true !== $res) {
+        $res = $this->waitForSeleniumState('on', $output);
+        if (false === $res) {
             $output->writeln(file_get_contents($this->seleniumLogFile));
             throw new \RuntimeException('Selenium hasn\'t started successfully.');
         }

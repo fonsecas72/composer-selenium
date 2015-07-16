@@ -13,7 +13,7 @@ class SeleniumCommand extends Command
     /**
      * @var integer
      */
-    public $seleniumTimeout;
+    public $seleniumTimeout = 30000000;
 
     /**
      * @var integer
@@ -40,57 +40,45 @@ class SeleniumCommand extends Command
      */
     protected function setSeleniumTimeout($userOption)
     {
-        $this->seleniumTimeout = 30000000;
         if ($userOption !== false) {
             $this->seleniumTimeout = (int) $userOption * 1000000;
         }
     }
-
-    /**
-     *
-     * @param boolean $expectedReturnStatus
-     * @param OutputInterface $output
-     * @param string $seleniumCmd
-     * @return boolean whether if the expectedReturn was successful or not
-     */
-    public function orderAndWaitForIt($expectedReturnStatus, OutputInterface $output, $seleniumCmd)
+    public function waitForSeleniumState($state, OutputInterface $output)
     {
         $client = new Client();
-        $timeLeft = $this->seleniumTimeout;
         $progress = new ProgressBar($output, $this->seleniumTimeout);
         $progress->start();
+        $timeLeft = $this->seleniumTimeout;
         while (true) {
-            $res = null;
+            $timeLeft = $this->updateTimeleft($timeLeft);
+            $progress->setProgress($this->seleniumTimeout - $timeLeft);
             try {
-                $res = $client->get($this->getSeleniumHostDriverURL(), [
-                    'query' => ['cmd' => $seleniumCmd],
-                    // 'synchronous' => true, // guzzle 6
-                ]);
-            } catch (ConnectException $e) {
-                if ($expectedReturnStatus > 400) {
-
+                $client->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'getLogMessages']]);
+            } catch (ConnectException $exc) {
+                if (strtolower($state) == 'off') {
                     break;
                 }
+                continue; // try again
             }
-
-            if (isset($res) && $res->getStatusCode() == $expectedReturnStatus) {
+            if (strtolower($state) == 'on') {
                 break;
-            };
-
-            $timeLeft -= $this->seleniumWaitInterval;
-            if ($timeLeft < 0) {
-                $output->writeln(PHP_EOL.'Timeout: '.$this->getSeleniumHostDriverURL());
-
-                return false;
             }
-            usleep($this->seleniumWaitInterval);
-            $progress->setProgress($this->seleniumTimeout - $timeLeft);
         }
         $progress->finish();
-
-        return true;
+        return $timeLeft;
     }
+    
+    public function updateTimeleft($timeLeft)
+    {
+        $timeLeft -= $this->seleniumWaitInterval;
+        if ($timeLeft < 0) {
+            return false;
+        }
+        usleep($this->seleniumWaitInterval);
 
+        return $timeLeft;
+    }
     /**
      *
      * @param string $file

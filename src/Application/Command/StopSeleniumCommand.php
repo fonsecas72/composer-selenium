@@ -19,8 +19,17 @@ class StopSeleniumCommand extends SeleniumCommand
             't',
             InputOption::VALUE_REQUIRED,
             'Set how much you are willing to wait until selenium server is stopped (in seconds)',
-            false
+            30
         );
+    }
+
+    private function sendShutdownCmd()
+    {
+        $client = new \GuzzleHttp\Client();
+        try {
+            $client->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'shutDownSeleniumServer']]);
+        } catch (\Exception $exc) {
+        }
     }
 
     /**
@@ -32,11 +41,8 @@ class StopSeleniumCommand extends SeleniumCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->setSeleniumTimeout($input->getOption('timeout'));
-        $this->orderAndWaitForIt(
-            500,
-            $output,
-            'shutDownSeleniumServer'
-        );
+        $this->sendShutdownCmd();
+        $this->waitForSeleniumState('off', $output);
         $output->writeln("\nDone");
     }
 }
