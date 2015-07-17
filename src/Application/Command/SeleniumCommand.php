@@ -4,12 +4,27 @@ namespace BeubiQA\Application\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Output\OutputInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 
 class SeleniumCommand extends Command
 {
+    /** @var Client */
+    protected $httpClient;
+
+    /** @var ProgressBar */
+    protected $progressBar;
+
+    public function setProgressBar(ProgressBar $progressBar)
+    {
+        $this->progressBar = $progressBar;
+    }
+    
+    public function setHttpClient(Client $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
+
     /**
      * @var integer
      */
@@ -44,17 +59,15 @@ class SeleniumCommand extends Command
             $this->seleniumTimeout = (int) $userOption * 1000000;
         }
     }
-    public function waitForSeleniumState($state, OutputInterface $output)
+    public function waitForSeleniumState($state)
     {
-        $client = new Client();
-        $progress = new ProgressBar($output, $this->seleniumTimeout);
-        $progress->start();
+        $this->progressBar->start($this->seleniumTimeout);
         $timeLeft = $this->seleniumTimeout;
         while (true) {
             $timeLeft = $this->updateTimeleft($timeLeft);
-            $progress->setProgress($this->seleniumTimeout - $timeLeft);
+            $this->progressBar->setProgress($this->seleniumTimeout - $timeLeft);
             try {
-                $client->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'getLogMessages']]);
+                $this->httpClient->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'getLogMessages']]);
             } catch (ConnectException $exc) {
                 if (strtolower($state) == 'off') {
                     break;
@@ -65,7 +78,7 @@ class SeleniumCommand extends Command
                 break;
             }
         }
-        $progress->finish();
+        $this->progressBar->finish();
         return $timeLeft;
     }
     

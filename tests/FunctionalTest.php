@@ -16,8 +16,10 @@ class FunctionalTest extends SeleniumTestCase
     public function test_Get_Without_Permissions()
     {
         $dir = '/opt/';
-        $app = new SeleniumApplication();
-        $app->get('get')->run(
+        $httpClient = $this->getMockBuilder('GuzzleHttp\Client')->getMock();
+        
+        $getCmd = new \BeubiQA\Application\Command\GetSeleniumCommand($httpClient);
+        $getCmd->run(
             new ArrayInput(
                 array(
                     'get',

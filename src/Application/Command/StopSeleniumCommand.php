@@ -25,9 +25,8 @@ class StopSeleniumCommand extends SeleniumCommand
 
     private function sendShutdownCmd()
     {
-        $client = new \GuzzleHttp\Client();
         try {
-            $client->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'shutDownSeleniumServer']]);
+            $this->httpClient->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'shutDownSeleniumServer']]);
         } catch (\Exception $exc) {
             // we don't need to do anything here
         }
@@ -43,7 +42,12 @@ class StopSeleniumCommand extends SeleniumCommand
     {
         $this->setSeleniumTimeout($input->getOption('timeout'));
         $this->sendShutdownCmd();
-        $this->waitForSeleniumState('off', $output);
+        $this->waitForSeleniumState('off');
         $output->writeln("\nDone");
     }
+
+//    public function getName()
+//    {
+//        return 'stop';
+//    }
 }

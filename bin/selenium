@@ -18,5 +18,33 @@ if (
     );
 }
 
-$app = new \BeubiQA\Application\Console\SeleniumApplication('selenium  --- ');
-$app->run();
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+$container = new ContainerBuilder();
+$container->register('start_cmd', 'BeubiQA\Application\Command\StartSeleniumCommand')
+        ->addMethodCall('setProgressBar', array(new Reference('progress_bar')))
+        ->addMethodCall('setHttpClient', array(new Reference('http_client')));
+
+$container->register('stop_cmd', 'BeubiQA\Application\Command\StopSeleniumCommand')
+        ->addMethodCall('setProgressBar', array(new Reference('progress_bar')))
+        ->addMethodCall('setHttpClient', array(new Reference('http_client')));
+
+$container->register('get_cmd', 'BeubiQA\Application\Command\GetSeleniumCommand');
+
+$container->register('show_cmd', 'BeubiQA\Application\Command\ShowSeleniumCommand');
+
+$container->register('http_client', 'GuzzleHttp\Client');
+
+$container->register('progress_bar', 'Symfony\Component\Console\Helper\ProgressBar')
+        ->addArgument(new ConsoleOutput())
+        ->addArgument(30000000);
+
+$container->register('app', 'Symfony\Component\Console\Application')
+    ->addMethodCall('add', array(new Reference('start_cmd')))
+    ->addMethodCall('add', array(new Reference('stop_cmd')))
+    ->addMethodCall('add', array(new Reference('get_cmd')))
+    ->addMethodCall('add', array(new Reference('show_cmd')));
+
+$container->get('app')->run();

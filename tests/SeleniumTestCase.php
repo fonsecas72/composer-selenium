@@ -12,9 +12,10 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $app = new SeleniumApplication();
-        $app->get('stop')->run(
-            new ArrayInput(array('stop')),
+        $stopCmd = new \BeubiQA\Application\Command\StopSeleniumCommand();
+        $stopCmd->setHttpClient(new \GuzzleHttp\Client());
+        $stopCmd->run(
+            new ArrayInput(),
             new BufferedOutput()
         );
         $this->assertSeleniumIsNotRunning();
