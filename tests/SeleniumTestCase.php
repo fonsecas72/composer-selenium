@@ -10,6 +10,12 @@ use BeubiQA\Application\Selenium\GetSeleniumCommand;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
+    /** @var Client */
+    protected $httpClient;
+
+    /** @var ProgressBar */
+    protected $progressBar;
+
     public function setUp()
     {
         parent::setUp();

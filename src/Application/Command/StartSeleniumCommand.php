@@ -77,8 +77,8 @@ class StartSeleniumCommand extends SeleniumCommand
         $this->process->setCommandLine($startSeleniumCmd);
         $this->process->start();
         $this->waitForSeleniumState('on');
-
-        if ($input->hasOption('verbose') && $input->getOption('verbose')) {
+        
+        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_NORMAL) {
             $output->writeln(PHP_EOL);
             $this->followFileContent($this->seleniumLogFile);
         }

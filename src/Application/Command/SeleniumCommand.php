@@ -60,7 +60,7 @@ class SeleniumCommand extends Command
 
     /**
      *
-     * @param int $userOption
+     * @param integer $userOption
      */
     protected function setSeleniumTimeout($userOption)
     {
@@ -71,7 +71,7 @@ class SeleniumCommand extends Command
     /**
      *
      * @param string $state 'on' or 'off'
-     * @return false|int false on timout or timeleft
+     * @return false|integer false on timout or timeleft
      */
     public function waitForSeleniumState($state)
     {
@@ -98,8 +98,8 @@ class SeleniumCommand extends Command
 
     /**
      * 
-     * @param int $timeLeft
-     * @return boolean timeleft
+     * @param integer $timeLeft
+     * @return integer timeleft
      */
     public function updateTimeleft($timeLeft)
     {
