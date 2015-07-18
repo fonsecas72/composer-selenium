@@ -85,7 +85,6 @@ class StartSeleniumCommand extends SeleniumCommand
         $this->process->start();
         $this->waitForSeleniumState('on');
 
-        var_dump($input->getOption('follow'));
         if ($input->getOption('follow')) {
             $output->writeln(PHP_EOL);
             $this->followFileContent($this->seleniumLogFile, $input->getOption('follow'));
