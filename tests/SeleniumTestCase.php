@@ -2,22 +2,22 @@
 
 namespace BeubiQA\Tests;
 
-use BeubiQA\Application\Console\SeleniumApplication;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use BeubiQA\Application\Command\StartSeleniumCommand;
+use BeubiQA\Application\Command\StopSeleniumCommand;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         parent::setUp();
-        $stopCmd = new \BeubiQA\Application\Command\StopSeleniumCommand();
-        $stopCmd->setHttpClient(new \GuzzleHttp\Client());
-        $stopCmd->run(
-            new ArrayInput(),
-            new BufferedOutput()
-        );
+        $stopCmd = new StopSeleniumCommand();
+        $httpClient = new \GuzzleHttp\Client();
+        $stopCmd->setHttpClient($httpClient);
+        $stopCmdTester = new CommandTester($stopCmd);
+        $stopCmdTester->execute([]);
         $this->assertSeleniumIsNotRunning();
     }
     protected function assertSeleniumIsRunning()
@@ -45,22 +45,21 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     /**
      *
      * @param array $extraOptions
-     * @param array $defaultOptions
+     * @param array $inpuOptions
      * @return BufferedOutput
      */
     protected function startSelenium(
         array $extraOptions = array(),
-        array $defaultOptions = array('-l' => 'bin/selenium-server-standalone.jar')
+        array $inpuOptions = array('-l' => 'bin/selenium-server-standalone.jar')
     ) {
-        $defaultOptions[] = 'start';
-        $options = array_merge($defaultOptions, $extraOptions);
-        $output = new BufferedOutput();
-        $output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
-        $app = new SeleniumApplication();
-        $app->get('start')->run(
-            new ArrayInput($options),
-            $output
-        );
-        return $output;
+        $input = array_merge($inpuOptions, $extraOptions);
+        $output['verbosity'] = OutputInterface::VERBOSITY_VERY_VERBOSE;
+        $startCmd = new StartSeleniumCommand();
+        $httpClient = new \GuzzleHttp\Client();
+        $startCmd->setHttpClient($httpClient);
+        $startCmdTester = new CommandTester($startCmd);
+        $startCmdTester->execute($input, $output);
+        
+       return $startCmdTester->getDisplay();
     }
 }

@@ -31,7 +31,9 @@ $container->register('stop_cmd', 'BeubiQA\Application\Command\StopSeleniumComman
         ->addMethodCall('setProgressBar', array(new Reference('progress_bar')))
         ->addMethodCall('setHttpClient', array(new Reference('http_client')));
 
-$container->register('get_cmd', 'BeubiQA\Application\Command\GetSeleniumCommand');
+$container->register('get_cmd', 'BeubiQA\Application\Command\GetSeleniumCommand')
+        ->addMethodCall('setHttpClient', array(new Reference('http_client')))
+        ->addMethodCall('setProgressBar', array(new Reference('progress_bar')));
 
 $container->register('show_cmd', 'BeubiQA\Application\Command\ShowSeleniumCommand');
 

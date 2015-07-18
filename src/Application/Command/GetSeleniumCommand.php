@@ -6,7 +6,6 @@ use BeubiQA\Application\Command\SeleniumCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Helper\ProgressBar;
 
 class GetSeleniumCommand extends SeleniumCommand
 {
@@ -71,11 +70,10 @@ class GetSeleniumCommand extends SeleniumCommand
         }
         $outputFile = $destination.'/selenium-server-standalone.jar';
         if (!is_file($outputFile)) {
-            $this->downloadFile($output, $this->getSeleniumDownloadURL($version), $outputFile);
+            $this->downloadFile($this->getSeleniumDownloadURL($version), $outputFile);
         } else {
             $output->write('Skipping download as the file already exists.');
         }
-        $output->writeln('Done');
 
         if (!file_exists($outputFile)) {
             throw new \LogicException('Something wrong happent. The selenium file does not exists. '.$outputFile);
@@ -86,33 +84,23 @@ class GetSeleniumCommand extends SeleniumCommand
      *
      * @param OutputInterface $output
      * @param string $url
-     * @param string $outputFile
+     * @param string $saveTo
      */
-    private function downloadFile(OutputInterface $output, $url, $outputFile)
+    private function downloadFile($url, $saveTo)
     {
-        $opts = array(
-            'http' => array(
-                'method' => "GET",
-                'header' => "Content-type: application/force-download",
-            )
-        );
-        $progress = new ProgressBar($output, 35000000); // ~ 35Mb
-        $ctx = stream_context_create(
-            $opts,
-            array('notification' =>
-                function($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) use ($output, $progress) {
-                    switch ($notification_code) {
-                        case STREAM_NOTIFY_FILE_SIZE_IS:
-                            $progress->start($bytes_max);
-                            break;
-                        case STREAM_NOTIFY_PROGRESS:
-                            $progress->setProgress($bytes_transferred);
-                            break;
-                    }
-                }
-            )
-        );
-        file_put_contents($outputFile, file_get_contents($url, false, $ctx));
-        $progress->finish();
+        if ($this->progressBar) {
+            $emitter = $this->httpClient->getEmitter();
+            $emitter->on('before', function (\GuzzleHttp\Event\BeforeEvent $event) {
+                echo $event->getRequest();
+            });
+            $emitter->once('progress', function (\GuzzleHttp\Event\ProgressEvent $event) {
+                $this->progressBar->start($event->downloadSize);
+            });
+            $emitter->on('progress', function (\GuzzleHttp\Event\ProgressEvent $event) {
+                $this->progressBar->setProgress($event->downloaded);
+            });
+        }
+
+        $this->httpClient->get($url, ['save_to' => $saveTo]);
     }
 }

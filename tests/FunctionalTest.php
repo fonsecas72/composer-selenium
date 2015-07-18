@@ -6,6 +6,9 @@ use BeubiQA\Application\Console\SeleniumApplication;
 use BeubiQA\Tests\SeleniumTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use BeubiQA\Application\Command\GetSeleniumCommand;
+use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Console\Application;
 
 class FunctionalTest extends SeleniumTestCase
 {
@@ -15,43 +18,45 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Get_Without_Permissions()
     {
-        $dir = '/opt/';
-        $httpClient = $this->getMockBuilder('GuzzleHttp\Client')->getMock();
-        
-        $getCmd = new \BeubiQA\Application\Command\GetSeleniumCommand($httpClient);
-        $getCmd->run(
-            new ArrayInput(
-                array(
-                    'get',
-                    '-d' => $dir
-                )
-            ),
-            new BufferedOutput()
-        );
+        $getCmdTester = new CommandTester(new GetSeleniumCommand());
+        $getCmdTester->execute(array(
+             '-d' => '/opt/'
+        ));
     }
-    
     public function test_Get_Will_Download_a_File()
     {
-        $app = new SeleniumApplication();
-        $app->get('get')->run(
-            new ArrayInput(
-                array(
-                    'get',
-                    '-d' => $this->seleniumJarDir
-                )
-            ),
-            new BufferedOutput()
-        );
-        
+        $getCmd = new GetSeleniumCommand();
+        $httpClient = new \GuzzleHttp\Client();
+        $getCmd->setHttpClient($httpClient);
+        $getCmdTester = new CommandTester($getCmd);
+        $getCmdTester->execute(array(
+             '-d' => $this->seleniumJarDir
+        ));
+
         $this->assertFileExists($this->seleniumJarLocation);
         $this->assertEquals('deb2a8d4f6b5da90fd38d1915459ced2e53eb201', sha1_file($this->seleniumJarLocation));
+        $this->assertContains('Done', $getCmdTester->getDisplay());
+    }
+    public function test_Get_Will_Download_a_File_Already_exists()
+    {
+        $getCmd = new GetSeleniumCommand();
+        $httpClient = new \GuzzleHttp\Client();
+        $getCmd->setHttpClient($httpClient);
+        $getCmdTester = new CommandTester($getCmd);
+        $getCmdTester->execute(array(
+             '-d' => $this->seleniumJarDir
+        ));
+
+        $this->assertFileExists($this->seleniumJarLocation);
+        $this->assertContains('Skipping download as the file already exists.', $getCmdTester->getDisplay());
+        $this->assertContains('Done', $getCmdTester->getDisplay());
     }
     
     public function test_Start_Works()
     {
         $output = $this->startSelenium();
         $this->assertSeleniumIsRunning();
-        $this->assertContains($this->seleniumBasicCommand.' > selenium.log 2> selenium.log &', $output->fetch());
+        $this->assertContains($this->seleniumBasicCommand.' > selenium.log 2> selenium.log &', $output);
     }
     
     /**
@@ -65,14 +70,11 @@ class FunctionalTest extends SeleniumTestCase
     
     /**
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage Selenium hasn't started successfully.
+     * @expectedExceptionMessage The Firefox-profile you set is not available.
      */
     public function test_Start_Cmd_Firefox_Profile_That_Does_Not_Exists()
     {
-        $output = $this->startSelenium(array('-p' => '/sasa/'));
-        $this->assertSeleniumIsRunning();
-        $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate /opt/fidd > selenium.log 2> selenium.log &', $output->fetch());
-        $this->assertContains('Firefox profile template doesn\'t exist', $output->fetch());
+        $this->startSelenium(array('-p' => '/sasa/'));
     }
     
     public function test_Start_Cmd_Firefox_Profile()
@@ -81,13 +83,13 @@ class FunctionalTest extends SeleniumTestCase
         $output = $this->startSelenium(array('-p' => $profileDirPath));
         
         $this->assertSeleniumIsRunning();
-        $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log &', $output->fetch());
+        $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log &', $output);
     }
     
     public function test_Start_Cmd_XVFB()
     {
         $output = $this->startSelenium(array('--xvfb' => true));
-        $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 '.$this->seleniumBasicCommand, $output->fetch());
+        $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 '.$this->seleniumBasicCommand, $output);
         $this->assertSeleniumIsRunning();
     }
     
@@ -99,6 +101,6 @@ class FunctionalTest extends SeleniumTestCase
     {
         $output = $this->startSelenium(array('-t' => 0));
         $this->assertSeleniumIsNotRunning();
-        $this->assertContains('Timeout', $output->fetch());
+        $this->assertContains('Timeout', $output);
     }
 }

@@ -73,10 +73,10 @@ class StartSeleniumCommand extends SeleniumCommand
             $output->writeln(file_get_contents($this->seleniumLogFile));
             throw new \RuntimeException('Selenium hasn\'t started successfully.');
         }
-        if ($input->getOption('verbose')) {
-            $output->writeln(PHP_EOL);
-            $this->followFileContent($this->seleniumLogFile);
-        }
+//        if ($input->getOption('verbose')) {
+//            $output->writeln(PHP_EOL);
+//            $this->followFileContent($this->seleniumLogFile);
+//        }
         $output->writeln("\nDone");
     }
 
@@ -94,6 +94,9 @@ class StartSeleniumCommand extends SeleniumCommand
             $cmd = $xvfbCmd.' '.$cmd;
         }
         if ($input->getOption('firefox-profile')) {
+            if (!is_dir($input->getOption('firefox-profile'))) {
+                throw new \RuntimeException('The Firefox-profile you set is not available.');
+            }
             $cmd .= ' -firefoxProfileTemplate '.$input->getOption('firefox-profile');
         }
         if ($input->getOption('chrome-driver')) {

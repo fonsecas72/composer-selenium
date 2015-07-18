@@ -61,11 +61,11 @@ class SeleniumCommand extends Command
     }
     public function waitForSeleniumState($state)
     {
-        $this->progressBar->start($this->seleniumTimeout);
+        $this->progressBar ? $this->progressBar->start($this->seleniumTimeout) : '';
         $timeLeft = $this->seleniumTimeout;
         while (true) {
             $timeLeft = $this->updateTimeleft($timeLeft);
-            $this->progressBar->setProgress($this->seleniumTimeout - $timeLeft);
+            $this->progressBar ? $this->progressBar->setProgress($this->seleniumTimeout - $timeLeft) : '';
             try {
                 $this->httpClient->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'getLogMessages']]);
             } catch (ConnectException $exc) {
@@ -78,7 +78,7 @@ class SeleniumCommand extends Command
                 break;
             }
         }
-        $this->progressBar->finish();
+        $this->progressBar ? $this->progressBar->finish() : '';
         return $timeLeft;
     }
     
