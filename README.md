@@ -67,4 +67,24 @@ bin/selenium stop
 
 ##### Tips & Tricks
 
-* If you start selenium in verbose mode with it will tail the selenium log for you.
+You can also tail the selenium log after start with follow option:
+```
+bin/selenium start --follow
+```
+
+You can even track a specific log level
+```
+bin/selenium start --follow ERROR
+```
+
+This can be specially useful if you start selenium in the background before running tests.
+
+```
+bin/selenium start --follow ERROR &
+```
+
+Then if some error happens you will see it in your test log / output.
+
+
+
+

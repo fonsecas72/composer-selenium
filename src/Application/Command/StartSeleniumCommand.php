@@ -47,6 +47,13 @@ class StartSeleniumCommand extends SeleniumCommand
             'Use xvfb to start selenium server'
         )
         ->addOption(
+            'follow',
+            'f',
+            InputOption::VALUE_OPTIONAL,
+            'Follow selenium log. You may choose a specific level to follow. E.g. --follow ERROR ',
+            false
+        )
+        ->addOption(
             'timeout',
             't',
             InputOption::VALUE_REQUIRED,
@@ -77,10 +84,11 @@ class StartSeleniumCommand extends SeleniumCommand
         $this->process->setCommandLine($startSeleniumCmd);
         $this->process->start();
         $this->waitForSeleniumState('on');
-        
-        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_NORMAL) {
+
+        var_dump($input->getOption('follow'));
+        if ($input->getOption('follow')) {
             $output->writeln(PHP_EOL);
-            $this->followFileContent($this->seleniumLogFile);
+            $this->followFileContent($this->seleniumLogFile, $input->getOption('follow'));
         }
         $output->writeln("\nDone");
     }

@@ -123,7 +123,7 @@ class SeleniumCommand extends Command
      *
      * @param string $file
      */
-    public function followFileContent($file)
+    public function followFileContent($file, $level = 'INFO')
     {
         $size = 0;
         while (true) {
@@ -136,7 +136,9 @@ class SeleniumCommand extends Command
             $fh = fopen($file, 'r');
             fseek($fh, $size);
             while ($line = fgets($fh)) {
-                echo $line;
+                if (strpos($line, $level) !== false) {
+                    echo $line;
+                }
             }
             fclose($fh);
             $size = $currentSize;
