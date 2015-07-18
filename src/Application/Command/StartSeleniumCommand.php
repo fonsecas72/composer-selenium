@@ -6,9 +6,18 @@ use BeubiQA\Application\Command\SeleniumCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use BeubiQA\Application\Selenium\GetSeleniumCommand;
 
 class StartSeleniumCommand extends SeleniumCommand
 {
+    /** @var GetSeleniumCommand  */
+    protected $getSeleniumCommand;
+
+    public function __construct(GetSeleniumCommand $getSeleniumCommand)
+    {
+        $this->getSeleniumCommand = $getSeleniumCommand;
+        parent::__construct('start');
+    }
     protected function configure()
     {
         $this
@@ -61,7 +70,7 @@ class StartSeleniumCommand extends SeleniumCommand
         if (!is_readable($seleniumLocation)) {
             throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
         }
-        $startSeleniumCmd = $this->getSeleniumStartCommand($input, $seleniumLocation);
+        $startSeleniumCmd = $this->getSeleniumCommand->getStartCommand($input, $seleniumLocation, $this->seleniumLogFile);
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
             $output->write($startSeleniumCmd);
         }
@@ -76,31 +85,5 @@ class StartSeleniumCommand extends SeleniumCommand
             $this->followFileContent($this->seleniumLogFile);
         }
         $output->writeln("\nDone");
-    }
-
-    /**
-     *
-     * @param InputInterface $input
-     * @param string $seleniumLocation
-     * @return string
-     */
-    private function getSeleniumStartCommand(InputInterface $input, $seleniumLocation)
-    {
-        $cmd = 'java -jar '.$seleniumLocation;
-        if ($input->getOption('xvfb')) {
-            $xvfbCmd = 'DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1';
-            $cmd = $xvfbCmd.' '.$cmd;
-        }
-        if ($input->getOption('firefox-profile')) {
-            if (!is_dir($input->getOption('firefox-profile'))) {
-                throw new \RuntimeException('The Firefox-profile you set is not available.');
-            }
-            $cmd .= ' -firefoxProfileTemplate '.$input->getOption('firefox-profile');
-        }
-        if ($input->getOption('chrome-driver')) {
-            $cmd .= ' -Dwebdriver.chrome.driver='.$input->getOption('chrome-driver');
-        }
-
-        return $cmd.' > '.$this->seleniumLogFile.' 2> '.$this->seleniumLogFile.' &';
     }
 }

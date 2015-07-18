@@ -23,7 +23,14 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 $container = new ContainerBuilder();
+
+$container->register('get_selenium_cmd', 'BeubiQA\Application\Selenium\GetSeleniumCommand')
+        ->addArgument(new Reference('exe_finder'));
+
+$container->register('exe_finder', 'Symfony\Component\Process\ExecutableFinder');
+
 $container->register('start_cmd', 'BeubiQA\Application\Command\StartSeleniumCommand')
+        ->addArgument(new Reference('get_selenium_cmd'))
         ->addMethodCall('setProgressBar', array(new Reference('progress_bar')))
         ->addMethodCall('setHttpClient', array(new Reference('http_client')));
 
@@ -31,7 +38,7 @@ $container->register('stop_cmd', 'BeubiQA\Application\Command\StopSeleniumComman
         ->addMethodCall('setProgressBar', array(new Reference('progress_bar')))
         ->addMethodCall('setHttpClient', array(new Reference('http_client')));
 
-$container->register('get_cmd', 'BeubiQA\Application\Command\GetSeleniumCommand')
+$container->register('download_cmd', 'BeubiQA\Application\Command\DownloadSeleniumCommand')
         ->addMethodCall('setHttpClient', array(new Reference('http_client')))
         ->addMethodCall('setProgressBar', array(new Reference('progress_bar')));
 
@@ -46,7 +53,7 @@ $container->register('progress_bar', 'Symfony\Component\Console\Helper\ProgressB
 $container->register('app', 'Symfony\Component\Console\Application')
     ->addMethodCall('add', array(new Reference('start_cmd')))
     ->addMethodCall('add', array(new Reference('stop_cmd')))
-    ->addMethodCall('add', array(new Reference('get_cmd')))
+    ->addMethodCall('add', array(new Reference('download_cmd')))
     ->addMethodCall('add', array(new Reference('show_cmd')));
 
 $container->get('app')->run();

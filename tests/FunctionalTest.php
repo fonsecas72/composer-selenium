@@ -3,7 +3,7 @@
 namespace BeubiQA\Tests;
 
 use BeubiQA\Tests\SeleniumTestCase;
-use BeubiQA\Application\Command\GetSeleniumCommand;
+use BeubiQA\Application\Command\DownloadSeleniumCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class FunctionalTest extends SeleniumTestCase
@@ -14,14 +14,14 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Get_Without_Permissions()
     {
-        $getCmdTester = new CommandTester(new GetSeleniumCommand());
+        $getCmdTester = new CommandTester(new DownloadSeleniumCommand());
         $getCmdTester->execute(array(
              '-d' => '/opt/'
         ));
     }
     public function test_Get_Will_Download_a_File()
     {
-        $getCmd = new GetSeleniumCommand();
+        $getCmd = new DownloadSeleniumCommand();
         $getCmd->setHttpClient($this->httpClient);
         $getCmdTester = new CommandTester($getCmd);
         $getCmdTester->execute(array(
@@ -34,7 +34,7 @@ class FunctionalTest extends SeleniumTestCase
     }
     public function test_Get_Will_Download_a_File_Already_exists()
     {
-        $getCmd = new GetSeleniumCommand();
+        $getCmd = new DownloadSeleniumCommand();
         $getCmd->setHttpClient($this->httpClient);
         $getCmdTester = new CommandTester($getCmd);
         $getCmdTester->execute(array(

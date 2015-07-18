@@ -2,11 +2,11 @@
 
 namespace BeubiQA\Tests;
 
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use BeubiQA\Application\Command\StartSeleniumCommand;
 use BeubiQA\Application\Command\StopSeleniumCommand;
 use Symfony\Component\Console\Tester\CommandTester;
+use BeubiQA\Application\Selenium\GetSeleniumCommand;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -39,7 +39,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     }
     
     protected $seleniumJarLocation = 'bin/selenium-server-standalone.jar';
-    protected $seleniumBasicCommand = 'java -jar bin/selenium-server-standalone.jar';
+    protected $seleniumBasicCommand = '/usr/bin/java -jar bin/selenium-server-standalone.jar';
     protected $seleniumJarDir = 'bin/';
     
     /**
@@ -55,7 +55,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         $input = array_merge($inpuOptions, $extraOptions);
         $output = [];
         $output['verbosity'] = OutputInterface::VERBOSITY_VERY_VERBOSE;
-        $startCmd = new StartSeleniumCommand();
+        $startCmd = new StartSeleniumCommand(new GetSeleniumCommand(new \Symfony\Component\Process\ExecutableFinder()));
         $startCmd->setHttpClient($this->httpClient);
         $startCmdTester = new CommandTester($startCmd);
         $startCmdTester->execute($input, $output);

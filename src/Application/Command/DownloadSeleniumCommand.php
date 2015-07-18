@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
-class GetSeleniumCommand extends SeleniumCommand
+class DownloadSeleniumCommand extends SeleniumCommand
 {
     protected function configure()
     {
