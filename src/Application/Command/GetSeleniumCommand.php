@@ -82,7 +82,6 @@ class GetSeleniumCommand extends SeleniumCommand
 
     /**
      *
-     * @param OutputInterface $output
      * @param string $url
      * @param string $saveTo
      */

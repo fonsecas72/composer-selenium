@@ -73,10 +73,10 @@ class StartSeleniumCommand extends SeleniumCommand
             $output->writeln(file_get_contents($this->seleniumLogFile));
             throw new \RuntimeException('Selenium hasn\'t started successfully.');
         }
-//        if ($input->getOption('verbose')) {
-//            $output->writeln(PHP_EOL);
-//            $this->followFileContent($this->seleniumLogFile);
-//        }
+        if ($input->hasOption('verbose') && $input->getOption('verbose')) {
+            $output->writeln(PHP_EOL);
+            $this->followFileContent($this->seleniumLogFile);
+        }
         $output->writeln("\nDone");
     }
 

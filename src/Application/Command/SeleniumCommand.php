@@ -59,6 +59,11 @@ class SeleniumCommand extends Command
             $this->seleniumTimeout = (int) $userOption * 1000000;
         }
     }
+    /**
+     *
+     * @param string $state 'on' or 'off'
+     * @return false|int false on timout or timeleft
+     */
     public function waitForSeleniumState($state)
     {
         $this->progressBar ? $this->progressBar->start($this->seleniumTimeout) : '';
@@ -81,7 +86,12 @@ class SeleniumCommand extends Command
         $this->progressBar ? $this->progressBar->finish() : '';
         return $timeLeft;
     }
-    
+
+    /**
+     * 
+     * @param int $timeLeft
+     * @return boolean timeleft
+     */
     public function updateTimeleft($timeLeft)
     {
         $timeLeft -= $this->seleniumWaitInterval;

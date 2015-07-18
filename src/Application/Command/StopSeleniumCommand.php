@@ -29,7 +29,7 @@ class StopSeleniumCommand extends SeleniumCommand
             $this->httpClient->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'shutDownSeleniumServer']]);
         } catch (\Exception $exc) {
             // we don't need to do anything here
-        }
+    }
     }
 
     /**
@@ -45,9 +45,4 @@ class StopSeleniumCommand extends SeleniumCommand
         $this->waitForSeleniumState('off');
         $output->writeln("\nDone");
     }
-
-//    public function getName()
-//    {
-//        return 'stop';
-//    }
 }
