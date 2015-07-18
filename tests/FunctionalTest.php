@@ -22,8 +22,7 @@ class FunctionalTest extends SeleniumTestCase
     public function test_Get_Will_Download_a_File()
     {
         $getCmd = new GetSeleniumCommand();
-        $httpClient = new \GuzzleHttp\Client();
-        $getCmd->setHttpClient($httpClient);
+        $getCmd->setHttpClient($this->httpClient);
         $getCmdTester = new CommandTester($getCmd);
         $getCmdTester->execute(array(
              '-d' => $this->seleniumJarDir
@@ -36,8 +35,7 @@ class FunctionalTest extends SeleniumTestCase
     public function test_Get_Will_Download_a_File_Already_exists()
     {
         $getCmd = new GetSeleniumCommand();
-        $httpClient = new \GuzzleHttp\Client();
-        $getCmd->setHttpClient($httpClient);
+        $getCmd->setHttpClient($this->httpClient);
         $getCmdTester = new CommandTester($getCmd);
         $getCmdTester->execute(array(
              '-d' => $this->seleniumJarDir

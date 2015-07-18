@@ -102,6 +102,14 @@ class SeleniumCommand extends Command
 
         return $timeLeft;
     }
+
+    public function verifyLogFileWritable()
+    {
+        if (file_exists($this->seleniumLogFile) && !is_writable($this->seleniumLogFile)) {
+            throw new \RuntimeException('No permissions in '.$this->seleniumLogFile);
+        }
+    }
+
     /**
      *
      * @param string $file

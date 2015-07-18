@@ -14,8 +14,8 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
         $stopCmd = new StopSeleniumCommand();
-        $httpClient = new \GuzzleHttp\Client();
-        $stopCmd->setHttpClient($httpClient);
+        $this->httpClient = new \GuzzleHttp\Client();
+        $stopCmd->setHttpClient($this->httpClient);
         $stopCmdTester = new CommandTester($stopCmd);
         $stopCmdTester->execute([]);
         $this->assertSeleniumIsNotRunning();
@@ -46,17 +46,17 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
      *
      * @param array $extraOptions
      * @param array $inpuOptions
-     * @return BufferedOutput
+     * @return string
      */
     protected function startSelenium(
         array $extraOptions = array(),
         array $inpuOptions = array('-l' => 'bin/selenium-server-standalone.jar')
     ) {
         $input = array_merge($inpuOptions, $extraOptions);
+        $output = [];
         $output['verbosity'] = OutputInterface::VERBOSITY_VERY_VERBOSE;
         $startCmd = new StartSeleniumCommand();
-        $httpClient = new \GuzzleHttp\Client();
-        $startCmd->setHttpClient($httpClient);
+        $startCmd->setHttpClient($this->httpClient);
         $startCmdTester = new CommandTester($startCmd);
         $startCmdTester->execute($input, $output);
         

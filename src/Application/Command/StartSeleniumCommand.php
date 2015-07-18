@@ -56,9 +56,7 @@ class StartSeleniumCommand extends SeleniumCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $seleniumLocation = $input->getOption('selenium-location') ?: './selenium-server-standalone.jar';
-        if (file_exists($this->seleniumLogFile) && !is_writable($this->seleniumLogFile)) {
-            throw new \RuntimeException('No permissions in '.$this->seleniumLogFile);
-        }
+        $this->verifyLogFileWritable();
         $this->setSeleniumTimeout($input->getOption('timeout'));
         if (!is_readable($seleniumLocation)) {
             throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
