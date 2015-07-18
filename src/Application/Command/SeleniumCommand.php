@@ -71,7 +71,7 @@ class SeleniumCommand extends Command
     /**
      *
      * @param string $state 'on' or 'off'
-     * @return false|integer false on timout or timeleft
+     * @return integer false on timout or timeleft
      */
     public function waitForSeleniumState($state)
     {

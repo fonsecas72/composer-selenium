@@ -7,20 +7,22 @@ use BeubiQA\Application\Command\StartSeleniumCommand;
 use BeubiQA\Application\Command\StopSeleniumCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 use BeubiQA\Application\Selenium\GetSeleniumCommand;
+use Symfony\Component\Process\Process;
+use GuzzleHttp\Client;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
     /** @var Client */
     protected $httpClient;
 
-    /** @var ProgressBar */
-    protected $progressBar;
+    /** @var Process */
+    protected $process;
 
     public function setUp()
     {
         parent::setUp();
-        $this->httpClient = new \GuzzleHttp\Client();
-        $this->process = new \Symfony\Component\Process\Process('');
+        $this->httpClient = new Client();
+        $this->process = new Process('');
         $stopCmd = new StopSeleniumCommand();
         $stopCmd->setHttpClient($this->httpClient);
         $stopCmd->setProcess($this->process);
