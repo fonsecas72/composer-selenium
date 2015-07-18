@@ -19,9 +19,23 @@ class FunctionalTest extends SeleniumTestCase
              '-d' => '/opt/'
         ));
     }
+    public function test_Get_Will_Download_a_File()
+    {
+        is_file($this->seleniumJarLocation) ? unlink($this->seleniumJarLocation) : '';
+        $output = $this->exeGetCmd();
+        $this->assertFileExists($this->seleniumJarLocation);
+        $this->assertEquals('deb2a8d4f6b5da90fd38d1915459ced2e53eb201', sha1_file($this->seleniumJarLocation));
+        $this->assertContains('Done', $output);
+
+        $output = $this->exeGetCmd();
+        $this->assertFileExists($this->seleniumJarLocation);
+        $this->assertContains('Skipping download as the file already exists.', $output);
+        $this->assertContains('Done', $output);
+    }
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Selenium jar not found
+     * @depends test_Get_Will_Download_a_File
      */
     public function test_Start_Does_Not_Exists()
     {
@@ -30,6 +44,7 @@ class FunctionalTest extends SeleniumTestCase
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage The Firefox-profile you set is not available.
+     * @depends test_Get_Will_Download_a_File
      */
     public function test_Start_Cmd_Firefox_Profile_That_Does_Not_Exists()
     {
@@ -38,6 +53,7 @@ class FunctionalTest extends SeleniumTestCase
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Timeout
+     * @depends test_Get_Will_Download_a_File
      */
     public function test_Start_Cmd_With_Short_Timeout()
     {
@@ -53,27 +69,20 @@ class FunctionalTest extends SeleniumTestCase
         ));
         return $getCmdTester->getDisplay();
     }
-    public function test_Get_Will_Download_a_File()
-    {
-        is_file($this->seleniumJarLocation) ? unlink($this->seleniumJarLocation) : '';
-        $output = $this->exeGetCmd();
-        $this->assertFileExists($this->seleniumJarLocation);
-        $this->assertEquals('deb2a8d4f6b5da90fd38d1915459ced2e53eb201', sha1_file($this->seleniumJarLocation));
-        $this->assertContains('Done', $output);
 
-        $output = $this->exeGetCmd();
-        $this->assertFileExists($this->seleniumJarLocation);
-        $this->assertContains('Skipping download as the file already exists.', $output);
-        $this->assertContains('Done', $output);
-    }
-    
+    /**
+     * @depends test_Get_Will_Download_a_File
+     */
     public function test_Start_Works()
     {
         $output = $this->startSelenium();
         $this->assertSeleniumIsRunning();
         $this->assertContains($this->seleniumBasicCommand.' > selenium.log 2> selenium.log', $output);
     }
-    
+
+    /**
+     * @depends test_Get_Will_Download_a_File
+     */
     public function test_Start_Cmd_Firefox_Profile()
     {
         $profileDirPath = __DIR__.'/Resources/firefoxProfile/';
@@ -82,7 +91,10 @@ class FunctionalTest extends SeleniumTestCase
         $this->assertSeleniumIsRunning();
         $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log', $output);
     }
-    
+
+    /**
+     * @depends test_Get_Will_Download_a_File
+     */
     public function test_Start_Cmd_XVFB()
     {
         $output = $this->startSelenium(array('--xvfb' => true));
