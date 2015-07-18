@@ -55,7 +55,7 @@ class FunctionalTest extends SeleniumTestCase
     }
     public function test_Get_Will_Download_a_File()
     {
-        unlink($this->seleniumJarLocation);
+        is_file($this->seleniumJarLocation) ? unlink($this->seleniumJarLocation) : '';
         $getCmdTester = $this->exeGetCmd();
         $this->assertFileExists($this->seleniumJarLocation);
         $this->assertEquals('deb2a8d4f6b5da90fd38d1915459ced2e53eb201', sha1_file($this->seleniumJarLocation));
