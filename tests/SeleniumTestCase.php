@@ -13,9 +13,11 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $stopCmd = new StopSeleniumCommand();
         $this->httpClient = new \GuzzleHttp\Client();
+        $this->process = new \Symfony\Component\Process\Process('');
+        $stopCmd = new StopSeleniumCommand();
         $stopCmd->setHttpClient($this->httpClient);
+        $stopCmd->setProcess($this->process);
         $stopCmdTester = new CommandTester($stopCmd);
         $stopCmdTester->execute([]);
         $this->assertSeleniumIsNotRunning();
@@ -57,6 +59,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         $output['verbosity'] = OutputInterface::VERBOSITY_VERY_VERBOSE;
         $startCmd = new StartSeleniumCommand(new GetSeleniumCommand(new \Symfony\Component\Process\ExecutableFinder()));
         $startCmd->setHttpClient($this->httpClient);
+        $startCmd->setProcess($this->process);
         $startCmdTester = new CommandTester($startCmd);
         $startCmdTester->execute($input, $output);
         

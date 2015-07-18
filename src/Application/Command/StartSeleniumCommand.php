@@ -74,12 +74,10 @@ class StartSeleniumCommand extends SeleniumCommand
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
             $output->write($startSeleniumCmd);
         }
-        exec($startSeleniumCmd);
-        $res = $this->waitForSeleniumState('on');
-        if (false === $res) {
-            $output->writeln(file_get_contents($this->seleniumLogFile));
-            throw new \RuntimeException('Selenium hasn\'t started successfully.');
-        }
+        $this->process->setCommandLine($startSeleniumCmd);
+        $this->process->start();
+        $this->waitForSeleniumState('on');
+
         if ($input->hasOption('verbose') && $input->getOption('verbose')) {
             $output->writeln(PHP_EOL);
             $this->followFileContent($this->seleniumLogFile);

@@ -19,6 +19,31 @@ class FunctionalTest extends SeleniumTestCase
              '-d' => '/opt/'
         ));
     }
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Selenium jar not found
+     */
+    public function test_Start_Does_Not_Exists()
+    {
+        $this->startSelenium(array(), array('-l' => 'no_selenium.jar'));
+    }
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage The Firefox-profile you set is not available.
+     */
+    public function test_Start_Cmd_Firefox_Profile_That_Does_Not_Exists()
+    {
+        $this->startSelenium(array('-p' => '/sasa/'));
+    }
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Timeout
+     */
+    public function test_Start_Cmd_With_Short_Timeout()
+    {
+        $this->startSelenium(array('-t' => 0));
+    }
+    
     public function test_Get_Will_Download_a_File()
     {
         $getCmd = new DownloadSeleniumCommand();
@@ -50,25 +75,7 @@ class FunctionalTest extends SeleniumTestCase
     {
         $output = $this->startSelenium();
         $this->assertSeleniumIsRunning();
-        $this->assertContains($this->seleniumBasicCommand.' > selenium.log 2> selenium.log &', $output);
-    }
-    
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Selenium jar not found
-     */
-    public function test_Start_Does_Not_Exists()
-    {
-        $this->startSelenium(array(), array('-l' => 'no_selenium.jar'));
-    }
-    
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage The Firefox-profile you set is not available.
-     */
-    public function test_Start_Cmd_Firefox_Profile_That_Does_Not_Exists()
-    {
-        $this->startSelenium(array('-p' => '/sasa/'));
+        $this->assertContains($this->seleniumBasicCommand.' > selenium.log 2> selenium.log', $output);
     }
     
     public function test_Start_Cmd_Firefox_Profile()
@@ -77,7 +84,7 @@ class FunctionalTest extends SeleniumTestCase
         $output = $this->startSelenium(array('-p' => $profileDirPath));
         
         $this->assertSeleniumIsRunning();
-        $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log &', $output);
+        $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log', $output);
     }
     
     public function test_Start_Cmd_XVFB()
@@ -85,16 +92,5 @@ class FunctionalTest extends SeleniumTestCase
         $output = $this->startSelenium(array('--xvfb' => true));
         $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 '.$this->seleniumBasicCommand, $output);
         $this->assertSeleniumIsRunning();
-    }
-    
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Selenium hasn't started successfully.
-     */
-    public function test_Start_Cmd_With_Short_Timeout()
-    {
-        $output = $this->startSelenium(array('-t' => 0));
-        $this->assertSeleniumIsNotRunning();
-        $this->assertContains('Timeout', $output);
     }
 }

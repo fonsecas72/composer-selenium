@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
+use Symfony\Component\Process\Process;
 
 class SeleniumCommand extends Command
 {
@@ -14,6 +15,9 @@ class SeleniumCommand extends Command
 
     /** @var ProgressBar */
     protected $progressBar;
+    
+    /** @var Process */
+    protected $process;
 
     public function setProgressBar(ProgressBar $progressBar)
     {
@@ -23,6 +27,11 @@ class SeleniumCommand extends Command
     public function setHttpClient(Client $httpClient)
     {
         $this->httpClient = $httpClient;
+    }
+    
+    public function setProcess(Process $process)
+    {
+        $this->process = $process;
     }
 
     /**
@@ -96,7 +105,7 @@ class SeleniumCommand extends Command
     {
         $timeLeft -= $this->seleniumWaitInterval;
         if ($timeLeft < 0) {
-            return false;
+            throw new \RuntimeException('Timeout!');
         }
         usleep($this->seleniumWaitInterval);
 

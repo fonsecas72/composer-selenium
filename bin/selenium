@@ -29,10 +29,14 @@ $container->register('get_selenium_cmd', 'BeubiQA\Application\Selenium\GetSeleni
 
 $container->register('exe_finder', 'Symfony\Component\Process\ExecutableFinder');
 
+$container->register('process', 'Symfony\Component\Process\Process')
+        ->addArgument('');
+
 $container->register('start_cmd', 'BeubiQA\Application\Command\StartSeleniumCommand')
         ->addArgument(new Reference('get_selenium_cmd'))
         ->addMethodCall('setProgressBar', array(new Reference('progress_bar')))
-        ->addMethodCall('setHttpClient', array(new Reference('http_client')));
+        ->addMethodCall('setHttpClient', array(new Reference('http_client')))
+        ->addMethodCall('setProcess', array(new Reference('process')));
 
 $container->register('stop_cmd', 'BeubiQA\Application\Command\StopSeleniumCommand')
         ->addMethodCall('setProgressBar', array(new Reference('progress_bar')))

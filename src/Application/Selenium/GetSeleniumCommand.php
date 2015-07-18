@@ -39,6 +39,6 @@ class GetSeleniumCommand
             $cmd .= ' -Dwebdriver.chrome.driver='.$input->getOption('chrome-driver');
         }
 
-        return $cmd.' > '.$seleniumLogFile.' 2> '.$seleniumLogFile.' &';
+        return $cmd.' > '.$seleniumLogFile.' 2> '.$seleniumLogFile;
     }
 }
