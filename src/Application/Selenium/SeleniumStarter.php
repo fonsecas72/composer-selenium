@@ -54,16 +54,13 @@ class SeleniumStarter
             $xvfbCmd = 'DISPLAY=:1 '.$this->exeFinder->find('xvfb-run').' --auto-servernum --server-num=1';
             $cmd = $xvfbCmd.' '.$cmd;
         }
-        if ($options['firefox-profile']) {
-            if (!is_dir($options['firefox-profile'])) {
-                throw new \RuntimeException('The Firefox-profile you set is not available.');
-            }
-            $cmd .= ' -firefoxProfileTemplate '.$options['firefox-profile'];
-        }
-        if ($options['chrome-driver']) {
-            $cmd .= ' -Dwebdriver.chrome.driver='.$options['chrome-driver'];
-        }
 
+        if (!empty($options['selenium-extra-options'])) {
+            foreach ($options['selenium-extra-options'] as $optionName => $optionValue) {
+                $cmd .= ' -'.$optionName.' '.$optionValue;
+            }
+        }
+        
         return $cmd.' > '.$options['log-location'].' 2> '.$options['log-location'];
     }
 }

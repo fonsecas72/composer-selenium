@@ -51,9 +51,13 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         $this->downloader = new SeleniumDownloader($this->httpClient);
         $this->handler = new SeleniumHandler($this->starter, $this->stopper, $this->downloader, $this->logWatcher);
 
+
         $stopCmd = new StopSeleniumCommand($this->handler);
         $stopCmdTester = new CommandTester($stopCmd);
-        $stopCmdTester->execute([]);
+        try {
+            $stopCmdTester->execute([]);
+        } catch (\Exception $exc) {
+        }
         $this->assertSeleniumIsNotRunning();
     }
     protected function assertSeleniumIsRunning()

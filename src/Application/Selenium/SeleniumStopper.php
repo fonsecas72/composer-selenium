@@ -4,6 +4,7 @@ namespace BeubiQA\Application\Selenium;
 
 use BeubiQA\Application\Selenium\SeleniumWaitter;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
 
 class SeleniumStopper
 {
@@ -21,25 +22,17 @@ class SeleniumStopper
 
     public function stop($options)
     {
-        $this->sendShutdownCmd();
+        $this->sendShutdownCmd($options['port']);
         $this->seleniumWaitter->waitForSeleniumStop($options);
     }
     
-    private function sendShutdownCmd()
+    private function sendShutdownCmd($port)
     {
+        $url = 'http://localhost:'.$port.'/selenium-server/driver/';
         try {
-            $this->httpClient->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'shutDownSeleniumServer']]);
-        } catch (\Exception $exc) {
-            // we don't need to do anything here TODO: see if there is another way
+            $this->httpClient->get($url, ['exceptions' => false,'query' => ['cmd' => 'shutDownSeleniumServer']]);
+        } catch (ConnectException $exc) {
+            throw new \RuntimeException($exc->getMessage().PHP_EOL.'Probably selenium is already stopped.');
         }
-    }
-    
-    /**
-     *
-     * @return string
-     */
-    private function getSeleniumHostDriverURL()
-    {
-        return 'http://localhost:4444/selenium-server/driver/';
     }
 }

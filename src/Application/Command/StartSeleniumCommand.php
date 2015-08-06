@@ -25,18 +25,6 @@ class StartSeleniumCommand extends Command
         $this
         ->setName('start')
         ->addOption(
-            'firefox-profile',
-            'p',
-            InputOption::VALUE_REQUIRED,
-            'Set a custom firefox profile location directory'
-        )
-        ->addOption(
-            'chrome-driver',
-            null,
-            InputOption::VALUE_REQUIRED,
-            'Set the chrome-driver path'
-        )
-        ->addOption(
             'selenium-location',
             'l',
             InputOption::VALUE_REQUIRED,
@@ -69,6 +57,13 @@ class StartSeleniumCommand extends Command
             'Set the location of the selenium.log file',
             'selenium.log'
         )
+        ->addOption(
+            'selextra',
+            null,
+            InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+            'Extra options to selenium cmd. You may give multiple options. E.g.: firefoxProfileTemplate=/profileDir',
+            []
+        )
         ->setDescription('Starts selenium server');
     }
 
@@ -81,14 +76,25 @@ class StartSeleniumCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $options = [];
-        $options['firefox-profile']     = $input->getOption('firefox-profile');
-        $options['chrome-driver']       = $input->getOption('chrome-driver');
+        $options['selenium-extra-options'] = [];
+        
         $options['selenium-location']   = $input->getOption('selenium-location') ? : './selenium-server-standalone.jar';
         $options['xvfb']                = $input->getOption('xvfb');
         $options['follow']              = $input->getOption('follow');
         $options['timeout']             = $input->getOption('timeout');
         $options['log-location']        = $input->getOption('log-location');
+        $options['port']                = 4444;
         
+        foreach ($input->getOption('selextra') as $option) {
+            $explode = explode('=', $option);
+            $optionName = $explode[0];
+            $value = $explode[1];
+            if ($optionName == 'port') {
+                $options['port'] = $value;
+            }
+            $options['selenium-extra-options'][$optionName] = $value;
+        }
+
         $startCmd = $this->seleniumHandler->start($options);
 
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {

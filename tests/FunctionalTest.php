@@ -47,15 +47,6 @@ class FunctionalTest extends SeleniumTestCase
     }
     /**
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage The Firefox-profile you set is not available.
-     * @depends test_Get_Will_Download_a_File
-     */
-    public function test_Start_Cmd_Firefox_Profile_That_Does_Not_Exists()
-    {
-        $this->startSelenium(array('-p' => '/sasa/'));
-    }
-    /**
-     * @expectedException \RuntimeException
      * @expectedExceptionMessage Timeout
      * @depends test_Get_Will_Download_a_File
      */
@@ -81,18 +72,6 @@ class FunctionalTest extends SeleniumTestCase
         $output = $this->startSelenium();
         $this->assertSeleniumIsRunning();
         $this->assertContains($this->seleniumBasicCommand.' > selenium.log 2> selenium.log', $output);
-    }
-
-    /**
-     * @depends test_Get_Will_Download_a_File
-     */
-    public function test_Start_Cmd_Firefox_Profile()
-    {
-        $profileDirPath = __DIR__.'/Resources/firefoxProfile/';
-        $output = $this->startSelenium(array('-p' => $profileDirPath));
-        
-        $this->assertSeleniumIsRunning();
-        $this->assertContains($this->seleniumBasicCommand.' -firefoxProfileTemplate '.$profileDirPath.' > selenium.log 2> selenium.log', $output);
     }
 
     /**

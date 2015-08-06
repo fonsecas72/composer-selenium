@@ -30,6 +30,13 @@ class StopSeleniumCommand extends Command
             InputOption::VALUE_REQUIRED,
             'Set how much you are willing to wait until selenium server is stopped (in seconds)',
             30
+        )
+        ->addOption(
+            'port',
+            'p',
+            InputOption::VALUE_REQUIRED,
+            'Set how much you are willing to wait until selenium server is stopped (in seconds)',
+            4444
         );
     }
 
@@ -44,6 +51,7 @@ class StopSeleniumCommand extends Command
     {
         $options = [];
         $options['timeout'] = $input->getOption('timeout');
+        $options['port'] = $input->getOption('port');
         $this->seleniumHandler->stop($options);
         $output->writeln("\nDone");
     }

@@ -48,7 +48,8 @@ class SeleniumWaitter
             $timeLeft = $this->updateTimeleft($timeLeft);
             $this->progressBar ? $this->progressBar->setProgress($this->seleniumTimeout - $timeLeft) : '';
             try {
-                $this->httpClient->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'getLogMessages']]);
+                $url = 'http://localhost:'.$options['port'].'/selenium-server/driver/';
+                $this->httpClient->get($url, ['query' => ['cmd' => 'getLogMessages']]);
             } catch (ConnectException $exc) {
                 continue; // try again
             }
@@ -67,7 +68,8 @@ class SeleniumWaitter
             $timeLeft = $this->updateTimeleft($timeLeft);
             $this->progressBar ? $this->progressBar->setProgress($this->seleniumTimeout - $timeLeft) : '';
             try {
-                $this->httpClient->get($this->getSeleniumHostDriverURL(), ['query' => ['cmd' => 'getLogMessages']]);
+                $url = 'http://localhost:'.$options['port'].'/selenium-server/driver/';
+                $this->httpClient->get($url, ['query' => ['cmd' => 'getLogMessages']]);
             } catch (ConnectException $exc) {
                 break;
             }
@@ -97,14 +99,5 @@ class SeleniumWaitter
         usleep($this->seleniumWaitInterval);
 
         return $timeLeft;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    private function getSeleniumHostDriverURL()
-    {
-        return 'http://localhost:4444/selenium-server/driver/';
     }
 }
