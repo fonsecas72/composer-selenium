@@ -18,6 +18,13 @@ class SeleniumHandler
     /** @var SeleniumLogWatcher  */
     protected $seleniumLogWatcher;
 
+    /**
+     *
+     * @param SeleniumStarter $seleniumStarter
+     * @param SeleniumStopper $seleniumStopper
+     * @param SeleniumDownloader $seleniumDownloader
+     * @param SeleniumLogWatcher $seleniumLogWatcher
+     */
     public function __construct(
         SeleniumStarter $seleniumStarter,
         SeleniumStopper $seleniumStopper,
@@ -30,18 +37,38 @@ class SeleniumHandler
         $this->seleniumLogWatcher = $seleniumLogWatcher;
     }
 
+    /**
+     *
+     * @param array $options
+     * @return string
+     */
     public function start($options)
     {
         return $this->seleniumStarter->start($options);
     }
+    /**
+     *
+     * @param array $options
+     * @return string|null
+     */
     public function stop($options)
     {
         return $this->seleniumStopper->stop($options);
     }
+    /**
+     *
+     * @param array $options
+     * @return string|null
+     */
     public function download($options)
     {
         return $this->seleniumDownloader->download($options);
     }
+    /**
+     *
+     * @param array $options
+     * @return string|null
+     */
     public function watch($options)
     {
         return $this->seleniumLogWatcher->watch($options);

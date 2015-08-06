@@ -15,6 +15,12 @@ class SeleniumStarter
     /** @var ExecutableFinder */
     protected $exeFinder;
 
+    /**
+     *
+     * @param Process $process
+     * @param SeleniumWaitter $seleniumWaitter
+     * @param ExecutableFinder $exeFinder
+     */
     public function __construct(Process $process, SeleniumWaitter $seleniumWaitter, ExecutableFinder $exeFinder)
     {
         $this->process = $process;
@@ -22,6 +28,12 @@ class SeleniumStarter
         $this->exeFinder = $exeFinder;
     }
 
+    /**
+     *
+     * @param array $options
+     * @return string
+     * @throws \RuntimeException
+     */
     public function start($options)
     {
         if (!is_readable($options['selenium-location'])) {
@@ -35,8 +47,10 @@ class SeleniumStarter
         return $startSeleniumCmd;
     }
     
+
     /**
      *
+     * @param array $options
      * @return string
      */
     private function getStartCommand($options)

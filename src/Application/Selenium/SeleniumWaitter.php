@@ -29,16 +29,30 @@ class SeleniumWaitter
      */
     public $seleniumLogFile = 'selenium.log';
 
+    /**
+     *
+     * @param Client $httpClient
+     */
     public function __construct(Client $httpClient)
     {
         $this->httpClient = $httpClient;
     }
 
+    /**
+     *
+     * @param ProgressBar $progressBar
+     */
     public function setProgressBar(ProgressBar $progressBar)
     {
         $this->progressBar = $progressBar;
     }
 
+    /**
+     *
+     * @param string $url
+     * @param int $timeLeft
+     * @return int
+     */
     private function waitUntilAvailable($url, $timeLeft)
     {
         while (true) {
@@ -54,6 +68,12 @@ class SeleniumWaitter
         return $timeLeft;
     }
     
+    /**
+     *
+     * @param string $url
+     * @param int $timeLeft
+     * @return int
+     */
     private function waitUntilException($url, $timeLeft)
     {
         while (true) {
@@ -68,6 +88,11 @@ class SeleniumWaitter
         return $timeLeft;
     }
 
+    /**
+     *
+     * @param array $options
+     * @return int
+     */
     public function waitForSeleniumStart($options)
     {
         $this->setSeleniumTimeout($options['timeout']);
@@ -77,7 +102,12 @@ class SeleniumWaitter
 
         return $timeLeft;
     }
-
+    
+    /**
+     *
+     * @param array $options
+     * @return int
+     */
     public function waitForSeleniumStop($options)
     {
         $this->setSeleniumTimeout($options['timeout']);
@@ -100,7 +130,11 @@ class SeleniumWaitter
     {
         $this->progressBar ? $this->progressBar->finish() : '';
     }
-    
+
+    /**
+     *
+     * @param int $userOption
+     */
     private function setSeleniumTimeout($userOption)
     {
         if ($userOption !== false) {

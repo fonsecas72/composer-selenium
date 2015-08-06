@@ -12,17 +12,30 @@ class SeleniumDownloader
     
     /** @var ProgressBar */
     protected $progressBar;
-    
+
+    /**
+     *
+     * @param Client $httpClient
+     */
     public function __construct(Client $httpClient)
     {
         $this->httpClient = $httpClient;
     }
 
+    /**
+     *
+     * @param ProgressBar $progressBar
+     */
     public function setProgressBar(ProgressBar $progressBar)
     {
         $this->progressBar = $progressBar;
     }
 
+    /**
+     *
+     * @param array $options
+     * @throws \RuntimeException
+     */
     public function download($options)
     {
         if (!is_writable(dirname($options['selenium-destination']))) {

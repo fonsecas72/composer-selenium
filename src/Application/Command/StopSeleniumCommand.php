@@ -13,6 +13,10 @@ class StopSeleniumCommand extends Command
     /** @var SeleniumHandler  */
     protected $seleniumHandler;
 
+    /**
+     *
+     * @param SeleniumHandler $seleniumHandler
+     */
     public function __construct(SeleniumHandler $seleniumHandler)
     {
         $this->seleniumHandler = $seleniumHandler;
@@ -40,12 +44,10 @@ class StopSeleniumCommand extends Command
         );
     }
 
-
     /**
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @throws \RuntimeException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

@@ -4,8 +4,10 @@ namespace BeubiQA\Application\Selenium;
 
 class SeleniumLogWatcher
 {
+
     /**
      *
+     * @param array $options
      */
     public function watch($options)
     {
@@ -30,6 +32,11 @@ class SeleniumLogWatcher
             $size = $currentSize;
         }
     }
+    /**
+     *
+     * @param string $file
+     * @throws \RuntimeException
+     */
     private function checkLogPermissions($file)
     {
         if (file_exists($file) && !is_writable($file)) {

@@ -14,18 +14,32 @@ class SeleniumStopper
     /** @var Client */
     protected $httpClient;
 
+    /**
+     *
+     * @param SeleniumWaitter $seleniumWaitter
+     * @param Client $httpClient
+     */
     public function __construct(SeleniumWaitter $seleniumWaitter, Client $httpClient)
     {
         $this->seleniumWaitter = $seleniumWaitter;
         $this->httpClient = $httpClient;
     }
 
+    /**
+     *
+     * @param array $options
+     */
     public function stop($options)
     {
         $this->sendShutdownCmd($options['port']);
         $this->seleniumWaitter->waitForSeleniumStop($options);
     }
-    
+
+    /**
+     *
+     * @param int $port
+     * @throws \RuntimeException
+     */
     private function sendShutdownCmd($port)
     {
         $url = 'http://localhost:'.$port.'/selenium-server/driver/';

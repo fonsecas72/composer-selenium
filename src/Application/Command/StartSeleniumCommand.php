@@ -14,6 +14,10 @@ class StartSeleniumCommand extends Command
     /** @var SeleniumHandler  */
     protected $seleniumHandler;
 
+    /**
+     *
+     * @param SeleniumHandler $seleniumHandler
+     */
     public function __construct(SeleniumHandler $seleniumHandler)
     {
         $this->seleniumHandler = $seleniumHandler;
@@ -77,34 +81,44 @@ class StartSeleniumCommand extends Command
     {
         $options = [];
         $options['selenium-extra-options'] = [];
-        
+        $options = $this->getHandlerOptionsFromInput($input);
+        $startCmd = $this->seleniumHandler->start($options);
+        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
+            $output->write($startCmd);
+        }
+        if ($options['follow']) {
+            $output->writeln(PHP_EOL);
+            $this->seleniumHandler->watch($options);
+        }
+        $output->writeln(PHP_EOL.'Done');
+    }
+
+
+    /**
+     *
+     * @param InputInterface $input
+     * @return array
+     */
+    private function getHandlerOptionsFromInput(InputInterface $input)
+    {
         $options['selenium-location']   = $input->getOption('selenium-location') ?: './selenium-server-standalone.jar';
         $options['xvfb']                = $input->getOption('xvfb');
         $options['follow']              = $input->getOption('follow');
         $options['timeout']             = $input->getOption('timeout');
         $options['log-location']        = $input->getOption('log-location');
         $options['port']                = 4444;
-        
-        foreach ($input->getOption('selextra') as $option) {
-            $explode = explode('=', $option);
+
+        foreach ($input->getOption('selextra') as $extraOption) {
+            $explode = explode('=', $extraOption);
             $optionName = $explode[0];
             $value = $explode[1];
             if ($optionName == 'port') {
                 $options['port'] = $value;
+                continue;
             }
             $options['selenium-extra-options'][$optionName] = $value;
         }
 
-        $startCmd = $this->seleniumHandler->start($options);
-
-        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
-            $output->write($startCmd);
-        }
-
-        if ($options['follow']) {
-            $output->writeln(PHP_EOL);
-             $this->seleniumHandler->watch($options);
-        }
-        $output->writeln("\nDone");
+        return $options;
     }
 }
