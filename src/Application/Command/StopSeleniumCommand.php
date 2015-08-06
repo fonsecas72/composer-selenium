@@ -27,7 +27,6 @@ class StopSeleniumCommand extends Command
     {
         $this
         ->setName('stop')
-        ->setDescription('Stops selenium server')
         ->addOption(
             'timeout',
             't',
@@ -41,7 +40,8 @@ class StopSeleniumCommand extends Command
             InputOption::VALUE_REQUIRED,
             'Set how much you are willing to wait until selenium server is stopped (in seconds)',
             4444
-        );
+        )
+        ->setDescription('Stops selenium server');
     }
 
     /**

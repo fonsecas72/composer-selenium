@@ -41,6 +41,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         try {
             $stopCmdTester->execute([]);
         } catch (\Exception $exc) {
+            // just to avoid failing when selenium is already stopped
         }
         $this->assertSeleniumIsNotRunning();
     }

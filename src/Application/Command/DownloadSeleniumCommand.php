@@ -13,6 +13,10 @@ class DownloadSeleniumCommand extends Command
     /** @var SeleniumHandler  */
     protected $seleniumHandler;
 
+    /**
+     *
+     * @param SeleniumHandler $seleniumHandler
+     */
     public function __construct(SeleniumHandler $seleniumHandler)
     {
         $this->seleniumHandler = $seleniumHandler;
