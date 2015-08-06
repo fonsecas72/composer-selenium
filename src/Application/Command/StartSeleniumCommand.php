@@ -78,7 +78,7 @@ class StartSeleniumCommand extends Command
         $options = [];
         $options['selenium-extra-options'] = [];
         
-        $options['selenium-location']   = $input->getOption('selenium-location') ? : './selenium-server-standalone.jar';
+        $options['selenium-location']   = $input->getOption('selenium-location') ?: './selenium-server-standalone.jar';
         $options['xvfb']                = $input->getOption('xvfb');
         $options['follow']              = $input->getOption('follow');
         $options['timeout']             = $input->getOption('timeout');

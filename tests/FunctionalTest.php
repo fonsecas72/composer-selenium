@@ -16,7 +16,7 @@ class FunctionalTest extends SeleniumTestCase
     {
         $getCmdTester = new CommandTester(new DownloadSeleniumCommand($this->handler));
         $getCmdTester->execute(array(
-             '-d' => '/opt/'
+                '-d' => '/opt/'
         ));
     }
     /**
@@ -59,7 +59,7 @@ class FunctionalTest extends SeleniumTestCase
         $getCmd = new DownloadSeleniumCommand($this->handler);
         $getCmdTester = new CommandTester($getCmd);
         $getCmdTester->execute(array(
-             '-d' => $this->seleniumJarDir
+                '-d' => $this->seleniumJarDir
         ));
         return $getCmdTester->getDisplay();
     }

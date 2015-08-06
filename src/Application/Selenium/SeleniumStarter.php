@@ -2,13 +2,9 @@
 
 namespace BeubiQA\Application\Selenium;
 
-use Symfony\Component\Process\Process;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ConnectException;
-use Symfony\Component\Console\Helper\ProgressBar;
 use BeubiQA\Application\Selenium\SeleniumWaitter;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
 
 class SeleniumStarter
 {
@@ -41,9 +37,6 @@ class SeleniumStarter
     
     /**
      *
-     * @param InputInterface $input
-     * @param string $seleniumLocation
-     * @param string $seleniumLogFile
      * @return string
      * @throws \RuntimeException
      */
