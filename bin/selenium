@@ -52,23 +52,29 @@ $container->register('process', 'Symfony\Component\Process\Process')
         ->addArgument('');
 
 $container->register('start_cmd', 'BeubiQA\Application\Command\StartSeleniumCommand')
-        ->addArgument(new Reference('starter'))
-        ->addArgument(new Reference('log_watcher'))
+        ->addArgument(new Reference('selenium-handler'))
         ->addArgument(new Reference('get_selenium_cmd'))
     ;
 
 $container->register('stop_cmd', 'BeubiQA\Application\Command\StopSeleniumCommand')
-        ->addArgument(new Reference('stopper'))
+        ->addArgument(new Reference('selenium-handler'))
     ;
 $container->register('download_cmd', 'BeubiQA\Application\Command\DownloadSeleniumCommand')
-        ->addArgument(new Reference('downloader'))
+        ->addArgument(new Reference('selenium-handler'))
     ;
 
 $container->register('show_cmd', 'BeubiQA\Application\Command\ShowSeleniumCommand')
-        ->addArgument(new Reference('log_watcher'))
+        ->addArgument(new Reference('selenium-handler'))
     ;
 
 $container->register('http_client', 'GuzzleHttp\Client');
+
+$container->register('selenium-handler', 'BeubiQA\Application\Selenium\SeleniumHandler')
+        ->addArgument(new Reference('starter'))
+        ->addArgument(new Reference('stopper'))
+        ->addArgument(new Reference('downloader'))
+        ->addArgument(new Reference('log_watcher'))
+    ;
 
 $container->register('progress_bar', 'Symfony\Component\Console\Helper\ProgressBar')
         ->addArgument(new ConsoleOutput())

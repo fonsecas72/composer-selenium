@@ -12,6 +12,9 @@ use GuzzleHttp\Client;
 use BeubiQA\Application\Selenium\SeleniumStopper;
 use BeubiQA\Application\Selenium\SeleniumWaitter;
 use BeubiQA\Application\Selenium\SeleniumDownloader;
+use BeubiQA\Application\Selenium\SeleniumHandler;
+use BeubiQA\Application\Selenium\SeleniumStarter;
+use BeubiQA\Application\Selenium\SeleniumLogWatcher;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -29,6 +32,8 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 
     /** @var SeleniumDownloader */
     protected $downloader;
+    /** @var SeleniumHandler */
+    protected $handler;
 
     public function setUp()
     {
@@ -37,8 +42,16 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         $this->process = new Process('');
         $this->waitter = new SeleniumWaitter($this->httpClient);
         $this->stopper = new SeleniumStopper($this->waitter, $this->httpClient);
+        $this->logWatcher = new SeleniumLogWatcher();
+        $this->starter = new SeleniumStarter(
+            $this->process,
+            new SeleniumCommandGetter(new \Symfony\Component\Process\ExecutableFinder()),
+            $this->waitter
+        );
         $this->downloader = new SeleniumDownloader($this->httpClient);
-        $stopCmd = new StopSeleniumCommand($this->stopper);
+        $this->handler = new SeleniumHandler($this->starter, $this->stopper, $this->downloader, $this->logWatcher);
+
+        $stopCmd = new StopSeleniumCommand($this->handler);
         $stopCmdTester = new CommandTester($stopCmd);
         $stopCmdTester->execute([]);
         $this->assertSeleniumIsNotRunning();
@@ -79,17 +92,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         $output = [];
         $output['verbosity'] = OutputInterface::VERBOSITY_VERY_VERBOSE;
 
-        $starter = new \BeubiQA\Application\Selenium\SeleniumStarter(
-            $this->process,
-            new SeleniumCommandGetter(new \Symfony\Component\Process\ExecutableFinder()),
-            $this->waitter
-        );
-        $watcher = new \BeubiQA\Application\Selenium\SeleniumLogWatcher();
-        $startCmd = new StartSeleniumCommand(
-            $starter,
-            $watcher,
-            new SeleniumCommandGetter(new \Symfony\Component\Process\ExecutableFinder())
-            );
+        $startCmd = new StartSeleniumCommand($this->handler);
         $startCmdTester = new CommandTester($startCmd);
         $startCmdTester->execute($input, $output);
         

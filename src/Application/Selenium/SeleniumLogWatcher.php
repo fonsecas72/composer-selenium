@@ -8,8 +8,9 @@ class SeleniumLogWatcher
      *
      * @param string $file
      */
-    public function followFileContent($file, $level = 'INFO')
+    public function watch($options)
     {
+        $file = $options['log-location'];
         $this->checkLogPermissions($file);
         $size = 0;
         while (true) {
@@ -22,7 +23,7 @@ class SeleniumLogWatcher
             $fh = fopen($file, 'r');
             fseek($fh, $size);
             while ($line = fgets($fh)) {
-                if (strpos($line, $level) !== false) {
+                if (strpos($line, $options['follow']) !== false) {
                     echo $line;
                 }
             }

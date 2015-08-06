@@ -14,7 +14,7 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Get_Without_Permissions()
     {
-        $getCmdTester = new CommandTester(new DownloadSeleniumCommand($this->downloader));
+        $getCmdTester = new CommandTester(new DownloadSeleniumCommand($this->handler));
         $getCmdTester->execute(array(
              '-d' => '/opt/'
         ));
@@ -65,7 +65,7 @@ class FunctionalTest extends SeleniumTestCase
     }
     private function exeGetCmd()
     {
-        $getCmd = new DownloadSeleniumCommand($this->downloader);
+        $getCmd = new DownloadSeleniumCommand($this->handler);
         $getCmdTester = new CommandTester($getCmd);
         $getCmdTester->execute(array(
              '-d' => $this->seleniumJarDir

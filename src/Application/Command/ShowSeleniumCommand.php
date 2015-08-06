@@ -5,18 +5,18 @@ namespace BeubiQA\Application\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use BeubiQA\Application\Selenium\SeleniumLogWatcher;
 use Symfony\Component\Console\Command\Command;
+use BeubiQA\Application\Selenium\SeleniumHandler;
 
 class ShowSeleniumCommand extends Command
 {
-    /** @var SeleniumLogWatcher  */
-    protected $seleniumLogWatcher;
+    /** @var SeleniumHandler  */
+    protected $seleniumHandler;
 
-    public function __construct(SeleniumLogWatcher $seleniumLogWatcher)
+    public function __construct(SeleniumHandler $seleniumHandler)
     {
-        $this->seleniumLogWatcher = $seleniumLogWatcher;
-        parent::__construct('show');
+        $this->seleniumHandler = $seleniumHandler;
+        parent::__construct('start');
     }
 
     protected function configure()
@@ -24,6 +24,13 @@ class ShowSeleniumCommand extends Command
         $this
         ->setName('show')
         ->setDescription('Displays selenium server log (tails the log file)')
+        ->addOption(
+            'log-location',
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Set the location of the selenium.log file',
+            'selenium.log'
+        )
         ->addOption(
             'follow',
             'f',
@@ -41,7 +48,11 @@ class ShowSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('Displaying '.$this->seleniumLogFile.' file:'.PHP_EOL);
-        $this->seleniumLogWatcher->followFileContent($this->seleniumLogFile, $input->getOption('follow'));
+        $options = [];
+        $options['follow']              = $input->getOption('follow');
+        $options['log-location']        = $input->getOption('log-location');
+
+        $output->writeln('Displaying '.$options['log-location'].' file:'.PHP_EOL);
+        $this->seleniumHandler->watch($options);
     }
 }

@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use BeubiQA\Application\Selenium\SeleniumWaitter;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class SeleniumStarter
 {
@@ -37,5 +38,7 @@ class SeleniumStarter
         $this->process->setCommandLine($startSeleniumCmd);
         $this->process->start();
         $this->seleniumWaitter->waitForSeleniumStart($options);
+        
+        return $startSeleniumCmd;
     }
 }

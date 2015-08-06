@@ -6,26 +6,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use BeubiQA\Application\Selenium\SeleniumCommandGetter;
-use BeubiQA\Application\Selenium\SeleniumStarter;
-use BeubiQA\Application\Selenium\SeleniumLogWatcher;
 use Symfony\Component\Console\Command\Command;
+use BeubiQA\Application\Selenium\SeleniumHandler;
 
 class StartSeleniumCommand extends Command
 {
-    /** @var SeleniumCommandGetter  */
-    protected $getSeleniumCommand;
-    
-    /** @var SeleniumStarter  */
-    protected $seleniumStarter;
+    /** @var SeleniumHandler  */
+    protected $seleniumHandler;
 
-    /** @var SeleniumLogWatcher  */
-    protected $seleniumLogWatcher;
-
-    public function __construct(SeleniumStarter $seleniumStarter, SeleniumLogWatcher $seleniumLogWatcher, SeleniumCommandGetter $getSeleniumCommand)
+    public function __construct(SeleniumHandler $seleniumHandler)
     {
-        $this->getSeleniumCommand = $getSeleniumCommand;
-        $this->seleniumStarter = $seleniumStarter;
-        $this->seleniumLogWatcher = $seleniumLogWatcher;
+        $this->seleniumHandler = $seleniumHandler;
         parent::__construct('start');
     }
     
@@ -89,6 +80,7 @@ class StartSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $options = [];
         $options['firefox-profile']     = $input->getOption('firefox-profile');
         $options['chrome-driver']       = $input->getOption('chrome-driver');
         $options['selenium-location']   = $input->getOption('selenium-location') ? : './selenium-server-standalone.jar';
@@ -96,17 +88,16 @@ class StartSeleniumCommand extends Command
         $options['follow']              = $input->getOption('follow');
         $options['timeout']             = $input->getOption('timeout');
         $options['log-location']        = $input->getOption('log-location');
-        $options['verbose_level']       = $output->getVerbosity();
         
-        $this->seleniumStarter->start($options);
+        $startCmd = $this->seleniumHandler->start($options);
 
-        if ($options['verbose_level'] >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
-            $output->write($this->getSeleniumCommand->getStartCommand($options));
+        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
+            $output->write($startCmd);
         }
 
         if ($options['follow']) {
             $output->writeln(PHP_EOL);
-            $this->seleniumLogWatcher->followFileContent($options['log-location'], $options['follow']);
+             $this->seleniumHandler->watch($options);
         }
         $output->writeln("\nDone");
     }
