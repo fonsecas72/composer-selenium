@@ -14,11 +14,15 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Get_Without_Permissions()
     {
-        $getCmdTester = new CommandTester(new DownloadSeleniumCommand());
+        $getCmdTester = new CommandTester(new DownloadSeleniumCommand($this->downloader));
         $getCmdTester->execute(array(
              '-d' => '/opt/'
         ));
     }
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage File already exists. bin/selenium-server-standalone.jar
+     */
     public function test_Get_Will_Download_a_File()
     {
         is_file($this->seleniumJarLocation) ? unlink($this->seleniumJarLocation) : '';
@@ -34,7 +38,7 @@ class FunctionalTest extends SeleniumTestCase
     }
     /**
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage Selenium jar not found
+     * @expectedExceptionMessage Selenium jar not readable
      * @depends test_Get_Will_Download_a_File
      */
     public function test_Start_Does_Not_Exists()
@@ -61,8 +65,7 @@ class FunctionalTest extends SeleniumTestCase
     }
     private function exeGetCmd()
     {
-        $getCmd = new DownloadSeleniumCommand();
-        $getCmd->setHttpClient($this->httpClient);
+        $getCmd = new DownloadSeleniumCommand($this->downloader);
         $getCmdTester = new CommandTester($getCmd);
         $getCmdTester->execute(array(
              '-d' => $this->seleniumJarDir

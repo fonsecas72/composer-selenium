@@ -2,13 +2,23 @@
 
 namespace BeubiQA\Application\Command;
 
-use BeubiQA\Application\Command\SeleniumCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use BeubiQA\Application\Selenium\SeleniumLogWatcher;
+use Symfony\Component\Console\Command\Command;
 
-class ShowSeleniumCommand extends SeleniumCommand
+class ShowSeleniumCommand extends Command
 {
+    /** @var SeleniumLogWatcher  */
+    protected $seleniumLogWatcher;
+
+    public function __construct(SeleniumLogWatcher $seleniumLogWatcher)
+    {
+        $this->seleniumLogWatcher = $seleniumLogWatcher;
+        parent::__construct('show');
+    }
+
     protected function configure()
     {
         $this
@@ -31,8 +41,7 @@ class ShowSeleniumCommand extends SeleniumCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->verifyLogFileWritable();
         $output->writeln('Displaying '.$this->seleniumLogFile.' file:'.PHP_EOL);
-        $this->followFileContent($this->seleniumLogFile, $input->getOption('follow'));
+        $this->seleniumLogWatcher->followFileContent($this->seleniumLogFile, $input->getOption('follow'));
     }
 }

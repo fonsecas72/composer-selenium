@@ -2,22 +2,33 @@
 
 namespace BeubiQA\Application\Command;
 
-use BeubiQA\Application\Command\SeleniumCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use BeubiQA\Application\Selenium\GetSeleniumCommand;
+use BeubiQA\Application\Selenium\SeleniumCommandGetter;
+use BeubiQA\Application\Selenium\SeleniumStarter;
+use BeubiQA\Application\Selenium\SeleniumLogWatcher;
+use Symfony\Component\Console\Command\Command;
 
-class StartSeleniumCommand extends SeleniumCommand
+class StartSeleniumCommand extends Command
 {
-    /** @var GetSeleniumCommand  */
+    /** @var SeleniumCommandGetter  */
     protected $getSeleniumCommand;
+    
+    /** @var SeleniumStarter  */
+    protected $seleniumStarter;
 
-    public function __construct(GetSeleniumCommand $getSeleniumCommand)
+    /** @var SeleniumLogWatcher  */
+    protected $seleniumLogWatcher;
+
+    public function __construct(SeleniumStarter $seleniumStarter, SeleniumLogWatcher $seleniumLogWatcher, SeleniumCommandGetter $getSeleniumCommand)
     {
         $this->getSeleniumCommand = $getSeleniumCommand;
+        $this->seleniumStarter = $seleniumStarter;
+        $this->seleniumLogWatcher = $seleniumLogWatcher;
         parent::__construct('start');
     }
+    
     protected function configure()
     {
         $this
@@ -60,6 +71,13 @@ class StartSeleniumCommand extends SeleniumCommand
             'Set how much you are willing to wait until selenium server is started (in seconds)',
             30
         )
+        ->addOption(
+            'log-location',
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Set the location of the selenium.log file',
+            'selenium.log'
+        )
         ->setDescription('Starts selenium server');
     }
 
@@ -71,23 +89,24 @@ class StartSeleniumCommand extends SeleniumCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $seleniumLocation = $input->getOption('selenium-location') ?: './selenium-server-standalone.jar';
-        $this->verifyLogFileWritable();
-        $this->setSeleniumTimeout($input->getOption('timeout'));
-        if (!is_readable($seleniumLocation)) {
-            throw new \RuntimeException('Selenium jar not found - '.$seleniumLocation);
-        }
-        $startSeleniumCmd = $this->getSeleniumCommand->getStartCommand($input, $seleniumLocation, $this->seleniumLogFile);
-        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
-            $output->write($startSeleniumCmd);
-        }
-        $this->process->setCommandLine($startSeleniumCmd);
-        $this->process->start();
-        $this->waitForSeleniumState('on');
+        $options['firefox-profile']     = $input->getOption('firefox-profile');
+        $options['chrome-driver']       = $input->getOption('chrome-driver');
+        $options['selenium-location']   = $input->getOption('selenium-location') ? : './selenium-server-standalone.jar';
+        $options['xvfb']                = $input->getOption('xvfb');
+        $options['follow']              = $input->getOption('follow');
+        $options['timeout']             = $input->getOption('timeout');
+        $options['log-location']        = $input->getOption('log-location');
+        $options['verbose_level']       = $output->getVerbosity();
+        
+        $this->seleniumStarter->start($options);
 
-        if ($input->getOption('follow')) {
+        if ($options['verbose_level'] >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
+            $output->write($this->getSeleniumCommand->getStartCommand($options));
+        }
+
+        if ($options['follow']) {
             $output->writeln(PHP_EOL);
-            $this->followFileContent($this->seleniumLogFile, $input->getOption('follow'));
+            $this->seleniumLogWatcher->followFileContent($options['log-location'], $options['follow']);
         }
         $output->writeln("\nDone");
     }

@@ -5,7 +5,7 @@ namespace BeubiQA\Application\Selenium;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Process\ExecutableFinder;
 
-class GetSeleniumCommand
+class SeleniumCommandGetter
 {
     /** @var ExecutableFinder */
     protected $exeFinder;
@@ -22,23 +22,23 @@ class GetSeleniumCommand
      * @return string
      * @throws \RuntimeException
      */
-    public function getStartCommand(InputInterface $input, $seleniumLocation, $seleniumLogFile)
+    public function getStartCommand($options)
     {
-        $cmd = $this->exeFinder->find('java').' -jar '.$seleniumLocation;
-        if ($input->getOption('xvfb')) {
+        $cmd = $this->exeFinder->find('java').' -jar '.$options['selenium-location'];
+        if ($options['xvfb']) {
             $xvfbCmd = 'DISPLAY=:1 '.$this->exeFinder->find('xvfb-run').' --auto-servernum --server-num=1';
             $cmd = $xvfbCmd.' '.$cmd;
         }
-        if ($input->getOption('firefox-profile')) {
-            if (!is_dir($input->getOption('firefox-profile'))) {
+        if ($options['firefox-profile']) {
+            if (!is_dir($options['firefox-profile'])) {
                 throw new \RuntimeException('The Firefox-profile you set is not available.');
             }
-            $cmd .= ' -firefoxProfileTemplate '.$input->getOption('firefox-profile');
+            $cmd .= ' -firefoxProfileTemplate '.$options['firefox-profile'];
         }
-        if ($input->getOption('chrome-driver')) {
-            $cmd .= ' -Dwebdriver.chrome.driver='.$input->getOption('chrome-driver');
+        if ($options['chrome-driver']) {
+            $cmd .= ' -Dwebdriver.chrome.driver='.$options['chrome-driver'];
         }
 
-        return $cmd.' > '.$seleniumLogFile.' 2> '.$seleniumLogFile;
+        return $cmd.' > '.$options['log-location'].' 2> '.$options['log-location'];
     }
 }
