@@ -68,13 +68,13 @@ class SeleniumDownloader
     {
         if ($this->progressBar) {
             $emitter = $this->httpClient->getEmitter();
-            $emitter->on('before', function (\GuzzleHttp\Event\BeforeEvent $event) {
+            $emitter->on('before', function(\GuzzleHttp\Event\BeforeEvent $event) {
                 echo $event->getRequest();
             });
-            $emitter->once('progress', function (\GuzzleHttp\Event\ProgressEvent $event) {
+            $emitter->once('progress', function(\GuzzleHttp\Event\ProgressEvent $event) {
                 $this->progressBar->start($event->downloadSize);
             });
-            $emitter->on('progress', function (\GuzzleHttp\Event\ProgressEvent $event) {
+            $emitter->on('progress', function(\GuzzleHttp\Event\ProgressEvent $event) {
                 $this->progressBar->setProgress($event->downloaded);
             });
         }

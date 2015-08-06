@@ -47,8 +47,8 @@ class DownloadSeleniumCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $options = [];
-        $options['selenium-destination']  = $input->getOption('selenium-destination') ? : './';
-        $options['selenium-version']      = $input->getOption('selenium-version') ? : '2.44';
+        $options['selenium-destination']  = $input->getOption('selenium-destination') ?: './';
+        $options['selenium-version']      = $input->getOption('selenium-version') ?: '2.44';
         $this->seleniumHandler->download($options);
         $output->writeln("\nDone");
     }
