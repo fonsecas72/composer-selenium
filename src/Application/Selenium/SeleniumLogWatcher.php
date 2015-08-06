@@ -6,7 +6,6 @@ class SeleniumLogWatcher
 {
     /**
      *
-     * @param string $file
      */
     public function watch($options)
     {

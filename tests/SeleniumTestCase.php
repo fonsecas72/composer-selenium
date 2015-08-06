@@ -2,19 +2,18 @@
 
 namespace BeubiQA\Tests;
 
-use Symfony\Component\Console\Output\OutputInterface;
 use BeubiQA\Application\Command\StartSeleniumCommand;
 use BeubiQA\Application\Command\StopSeleniumCommand;
-use Symfony\Component\Console\Tester\CommandTester;
-use BeubiQA\Application\Selenium\SeleniumCommandGetter;
-use Symfony\Component\Process\Process;
-use GuzzleHttp\Client;
-use BeubiQA\Application\Selenium\SeleniumStopper;
-use BeubiQA\Application\Selenium\SeleniumWaitter;
 use BeubiQA\Application\Selenium\SeleniumDownloader;
 use BeubiQA\Application\Selenium\SeleniumHandler;
-use BeubiQA\Application\Selenium\SeleniumStarter;
 use BeubiQA\Application\Selenium\SeleniumLogWatcher;
+use BeubiQA\Application\Selenium\SeleniumStarter;
+use BeubiQA\Application\Selenium\SeleniumStopper;
+use BeubiQA\Application\Selenium\SeleniumWaitter;
+use GuzzleHttp\Client;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Process\Process;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -100,6 +99,6 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         $startCmdTester = new CommandTester($startCmd);
         $startCmdTester->execute($input, $output);
         
-       return $startCmdTester->getDisplay();
+        return $startCmdTester->getDisplay();
     }
 }

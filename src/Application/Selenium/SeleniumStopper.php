@@ -30,7 +30,7 @@ class SeleniumStopper
     {
         $url = 'http://localhost:'.$port.'/selenium-server/driver/';
         try {
-            $this->httpClient->get($url, ['exceptions' => false,'query' => ['cmd' => 'shutDownSeleniumServer']]);
+            $this->httpClient->get($url, ['exceptions' => false, 'query' => ['cmd' => 'shutDownSeleniumServer']]);
         } catch (ConnectException $exc) {
             throw new \RuntimeException($exc->getMessage().PHP_EOL.'Probably selenium is already stopped.');
         }
