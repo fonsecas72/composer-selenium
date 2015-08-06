@@ -17,39 +17,24 @@ use Symfony\Component\Process\Process;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
-    /** @var Client */
-    protected $httpClient;
-
-    /** @var Process */
-    protected $process;
-    
-    /** @var SeleniumWaitter */
-    protected $waitter;
-    
-    /** @var SeleniumStopper */
-    protected $stopper;
-
-    /** @var SeleniumDownloader */
-    protected $downloader;
     /** @var SeleniumHandler */
     protected $handler;
 
     public function setUp()
     {
         parent::setUp();
-        $this->httpClient = new Client();
-        $this->process = new Process('');
-        $this->waitter = new SeleniumWaitter($this->httpClient);
-        $this->stopper = new SeleniumStopper($this->waitter, $this->httpClient);
-        $this->logWatcher = new SeleniumLogWatcher();
-        $this->starter = new SeleniumStarter(
-            $this->process,
-            $this->waitter,
+        $httpClient = new Client();
+        $process = new Process('');
+        $waitter = new SeleniumWaitter($httpClient);
+        $stopper = new SeleniumStopper($waitter, $httpClient);
+        $logWatcher = new SeleniumLogWatcher();
+        $starter = new SeleniumStarter(
+            $process,
+            $waitter,
             new \Symfony\Component\Process\ExecutableFinder()
         );
-        $this->downloader = new SeleniumDownloader($this->httpClient);
-        $this->handler = new SeleniumHandler($this->starter, $this->stopper, $this->downloader, $this->logWatcher);
-
+        $downloader = new SeleniumDownloader($httpClient);
+        $this->handler = new SeleniumHandler($starter, $stopper, $downloader, $logWatcher);
 
         $stopCmd = new StopSeleniumCommand($this->handler);
         $stopCmdTester = new CommandTester($stopCmd);

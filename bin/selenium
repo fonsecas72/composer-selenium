@@ -24,57 +24,41 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 $container = new ContainerBuilder();
 
-$container->register('starter', 'BeubiQA\Application\Selenium\SeleniumStarter')
-        ->addArgument(new Reference('process'))
-        ->addArgument(new Reference('waitter'))
-        ->addArgument(new Reference('exe_finder'))
-    ;
-$container->register('stopper', 'BeubiQA\Application\Selenium\SeleniumStopper')
-        ->addArgument(new Reference('waitter'))
-        ->addArgument(new Reference('http_client'))
-    ;
+            $container->register('process', 'Symfony\Component\Process\Process')->addArgument('');
+                $container->register('progress_bar', 'Symfony\Component\Console\Helper\ProgressBar')
+                    ->addArgument(new ConsoleOutput())
+                    ->addArgument(30000000);
+                $container->register('http_client', 'GuzzleHttp\Client');
+            $container->register('waitter', 'BeubiQA\Application\Selenium\SeleniumWaitter')
+                ->addArgument(new Reference('http_client'))
+                ->addMethodCall('setProgressBar', array(new Reference('progress_bar')));
+            $container->register('exe_finder', 'Symfony\Component\Process\ExecutableFinder');
+        $container->register('starter', 'BeubiQA\Application\Selenium\SeleniumStarter')
+            ->addArgument(new Reference('process'))
+            ->addArgument(new Reference('waitter'))
+            ->addArgument(new Reference('exe_finder'));
+        $container->register('stopper', 'BeubiQA\Application\Selenium\SeleniumStopper')
+            ->addArgument(new Reference('waitter'))
+            ->addArgument(new Reference('http_client'));
+        $container->register('downloader', 'BeubiQA\Application\Selenium\SeleniumDownloader')
+            ->addArgument(new Reference('http_client'))
+            ->addMethodCall('setProgressBar', array(new Reference('progress_bar')));
+        $container->register('log_watcher', 'BeubiQA\Application\Selenium\SeleniumLogWatcher');
 
-$container->register('exe_finder', 'Symfony\Component\Process\ExecutableFinder');
-$container->register('log_watcher', 'BeubiQA\Application\Selenium\SeleniumLogWatcher');
-$container->register('waitter', 'BeubiQA\Application\Selenium\SeleniumWaitter')
-        ->addArgument(new Reference('http_client'))
-        ->addMethodCall('setProgressBar', array(new Reference('progress_bar')))
-    ;
-$container->register('downloader', 'BeubiQA\Application\Selenium\SeleniumDownloader')
-        ->addArgument(new Reference('http_client'))
-        ->addMethodCall('setProgressBar', array(new Reference('progress_bar')))
-    ;
-
-$container->register('process', 'Symfony\Component\Process\Process')
-        ->addArgument('');
-
-$container->register('start_cmd', 'BeubiQA\Application\Command\StartSeleniumCommand')
-        ->addArgument(new Reference('selenium-handler'))
-    ;
-
-$container->register('stop_cmd', 'BeubiQA\Application\Command\StopSeleniumCommand')
-        ->addArgument(new Reference('selenium-handler'))
-    ;
-$container->register('download_cmd', 'BeubiQA\Application\Command\DownloadSeleniumCommand')
-        ->addArgument(new Reference('selenium-handler'))
-    ;
-
-$container->register('show_cmd', 'BeubiQA\Application\Command\ShowSeleniumCommand')
-        ->addArgument(new Reference('selenium-handler'))
-    ;
-
-$container->register('http_client', 'GuzzleHttp\Client');
-
-$container->register('selenium-handler', 'BeubiQA\Application\Selenium\SeleniumHandler')
+    $container->register('selenium-handler', 'BeubiQA\Application\Selenium\SeleniumHandler')
         ->addArgument(new Reference('starter'))
         ->addArgument(new Reference('stopper'))
         ->addArgument(new Reference('downloader'))
-        ->addArgument(new Reference('log_watcher'))
-    ;
+        ->addArgument(new Reference('log_watcher'));
 
-$container->register('progress_bar', 'Symfony\Component\Console\Helper\ProgressBar')
-        ->addArgument(new ConsoleOutput())
-        ->addArgument(30000000);
+$container->register('start_cmd', 'BeubiQA\Application\Command\StartSeleniumCommand')
+        ->addArgument(new Reference('selenium-handler'));
+$container->register('stop_cmd', 'BeubiQA\Application\Command\StopSeleniumCommand')
+        ->addArgument(new Reference('selenium-handler'));
+$container->register('download_cmd', 'BeubiQA\Application\Command\DownloadSeleniumCommand')
+        ->addArgument(new Reference('selenium-handler'));
+$container->register('show_cmd', 'BeubiQA\Application\Command\ShowSeleniumCommand')
+        ->addArgument(new Reference('selenium-handler'));
 
 $container->register('app', 'Symfony\Component\Console\Application')
     ->addMethodCall('add', array(new Reference('start_cmd')))

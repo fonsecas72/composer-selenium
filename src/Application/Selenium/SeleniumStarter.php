@@ -38,7 +38,6 @@ class SeleniumStarter
     /**
      *
      * @return string
-     * @throws \RuntimeException
      */
     private function getStartCommand($options)
     {

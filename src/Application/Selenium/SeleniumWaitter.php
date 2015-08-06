@@ -39,50 +39,74 @@ class SeleniumWaitter
         $this->progressBar = $progressBar;
     }
 
-    public function waitForSeleniumStart($options)
+    private function waitUntilAvailable($url, $timeLeft)
     {
-        $this->setSeleniumTimeout($options['timeout']);
-        $this->progressBar ? $this->progressBar->start($this->seleniumTimeout) : '';
-        $timeLeft = $this->seleniumTimeout;
         while (true) {
             $timeLeft = $this->updateTimeleft($timeLeft);
-            $this->progressBar ? $this->progressBar->setProgress($this->seleniumTimeout - $timeLeft) : '';
             try {
-                $url = 'http://localhost:'.$options['port'].'/selenium-server/driver/';
                 $this->httpClient->get($url, ['query' => ['cmd' => 'getLogMessages']]);
             } catch (ConnectException $exc) {
                 continue; // try again
             }
             break;
         }
-        $this->progressBar ? $this->progressBar->finish() : '';
+        
+        return $timeLeft;
+    }
+    
+    private function waitUntilException($url, $timeLeft)
+    {
+        while (true) {
+            $timeLeft = $this->updateTimeleft($timeLeft);
+            try {
+                $this->httpClient->get($url, ['query' => ['cmd' => 'getLogMessages']]);
+            } catch (ConnectException $exc) {
+                break;
+            }
+        }
+
+        return $timeLeft;
+    }
+
+    public function waitForSeleniumStart($options)
+    {
+        $this->setSeleniumTimeout($options['timeout']);
+        $url = 'http://localhost:'.$options['port'].'/selenium-server/driver/';
+        $timeLeft = $this->waitUntilAvailable($url, $this->seleniumTimeout);
+        $this->progressBarFinish();
+
         return $timeLeft;
     }
 
     public function waitForSeleniumStop($options)
     {
         $this->setSeleniumTimeout($options['timeout']);
-        $this->progressBar ? $this->progressBar->start($this->seleniumTimeout) : '';
-        $timeLeft = $this->seleniumTimeout;
-        while (true) {
-            $timeLeft = $this->updateTimeleft($timeLeft);
-            $this->progressBar ? $this->progressBar->setProgress($this->seleniumTimeout - $timeLeft) : '';
-            try {
-                $url = 'http://localhost:'.$options['port'].'/selenium-server/driver/';
-                $this->httpClient->get($url, ['query' => ['cmd' => 'getLogMessages']]);
-            } catch (ConnectException $exc) {
-                break;
-            }
-        }
-        $this->progressBar ? $this->progressBar->finish() : '';
+        $url = 'http://localhost:'.$options['port'].'/selenium-server/driver/';
+        $timeLeft = $this->waitUntilException($url, $this->seleniumTimeout);
+        $this->progressBarFinish();
+        
         return $timeLeft;
     }
-
+    
+    private function progressBarStart()
+    {
+        $this->progressBar ? $this->progressBar->start($this->seleniumTimeout) : '';
+    }
+    private function progressBarSetProgress($timeLeft)
+    {
+        $this->progressBar ? $this->progressBar->setProgress($this->seleniumTimeout - $timeLeft) : '';
+    }
+    private function progressBarFinish()
+    {
+        $this->progressBar ? $this->progressBar->finish() : '';
+    }
+    
     private function setSeleniumTimeout($userOption)
     {
         if ($userOption !== false) {
             $this->seleniumTimeout = (int) $userOption * 1000000;
         }
+        $this->progressBarStart();
     }
     
     /**
@@ -97,7 +121,8 @@ class SeleniumWaitter
             throw new \RuntimeException('Timeout!');
         }
         usleep($this->seleniumWaitInterval);
-
+        $this->progressBarSetProgress($timeLeft);
+        
         return $timeLeft;
     }
 }
