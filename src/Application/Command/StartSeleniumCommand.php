@@ -79,8 +79,6 @@ class StartSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $options = [];
-        $options['selenium-extra-options'] = [];
         $options = $this->getHandlerOptionsFromInput($input);
         $startCmd = $this->seleniumHandler->start($options);
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
@@ -101,6 +99,8 @@ class StartSeleniumCommand extends Command
      */
     private function getHandlerOptionsFromInput(InputInterface $input)
     {
+        $options = [];
+        $options['selenium-extra-options'] = [];
         $options['selenium-location']   = $input->getOption('selenium-location') ?: './selenium-server-standalone.jar';
         $options['xvfb']                = $input->getOption('xvfb');
         $options['follow']              = $input->getOption('follow');

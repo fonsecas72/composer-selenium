@@ -96,11 +96,20 @@ class SeleniumWaitter
     public function waitForSeleniumStart($options)
     {
         $this->setSeleniumTimeout($options['timeout']);
-        $url = 'http://localhost:'.$options['port'].'/selenium-server/driver/';
-        $timeLeft = $this->waitUntilAvailable($url, $this->seleniumTimeout);
+        $timeLeft = $this->waitUntilAvailable($this->getSeleniumUrl($options['port']), $this->seleniumTimeout);
         $this->progressBarFinish();
 
         return $timeLeft;
+    }
+
+    /**
+     *
+     * @param int $port
+     * @return string
+     */
+    private function getSeleniumUrl($port)
+    {
+        return 'http://localhost:'.$port.'/selenium-server/driver/';
     }
     
     /**
@@ -111,8 +120,7 @@ class SeleniumWaitter
     public function waitForSeleniumStop($options)
     {
         $this->setSeleniumTimeout($options['timeout']);
-        $url = 'http://localhost:'.$options['port'].'/selenium-server/driver/';
-        $timeLeft = $this->waitUntilException($url, $this->seleniumTimeout);
+        $timeLeft = $this->waitUntilException($this->getSeleniumUrl($options['port']), $this->seleniumTimeout);
         $this->progressBarFinish();
         
         return $timeLeft;
