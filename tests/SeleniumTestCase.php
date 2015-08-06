@@ -45,8 +45,8 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         $this->logWatcher = new SeleniumLogWatcher();
         $this->starter = new SeleniumStarter(
             $this->process,
-            new SeleniumCommandGetter(new \Symfony\Component\Process\ExecutableFinder()),
-            $this->waitter
+            $this->waitter,
+            new \Symfony\Component\Process\ExecutableFinder()
         );
         $this->downloader = new SeleniumDownloader($this->httpClient);
         $this->handler = new SeleniumHandler($this->starter, $this->stopper, $this->downloader, $this->logWatcher);

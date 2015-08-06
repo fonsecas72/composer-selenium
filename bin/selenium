@@ -24,13 +24,10 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 $container = new ContainerBuilder();
 
-$container->register('get_selenium_cmd', 'BeubiQA\Application\Selenium\SeleniumCommandGetter')
-        ->addArgument(new Reference('exe_finder'));
-
 $container->register('starter', 'BeubiQA\Application\Selenium\SeleniumStarter')
         ->addArgument(new Reference('process'))
-        ->addArgument(new Reference('get_selenium_cmd'))
         ->addArgument(new Reference('waitter'))
+        ->addArgument(new Reference('exe_finder'))
     ;
 $container->register('stopper', 'BeubiQA\Application\Selenium\SeleniumStopper')
         ->addArgument(new Reference('waitter'))
@@ -53,7 +50,6 @@ $container->register('process', 'Symfony\Component\Process\Process')
 
 $container->register('start_cmd', 'BeubiQA\Application\Command\StartSeleniumCommand')
         ->addArgument(new Reference('selenium-handler'))
-        ->addArgument(new Reference('get_selenium_cmd'))
     ;
 
 $container->register('stop_cmd', 'BeubiQA\Application\Command\StopSeleniumCommand')
