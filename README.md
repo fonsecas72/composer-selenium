@@ -51,10 +51,13 @@ Optionally, you may choose whether or not you want to use xvfb
 bin/selenium start --xvfb
 ```
 
-You can even set the firefox profile to use or set how much you are willing to wait for selenium to start (in seconds)
+You can throw selenium options too. For example:
+You can set the firefox profile to use:
 ```
-bin/selenium start --firefox-profile /someDir/toFirefoxProfile
+bin/selenium start --selextra firefox-profile=/someDir/toFirefoxProfile
 ```
+
+You can also set how much you are willing to wait for selenium to start (in seconds)
 ```
 bin/selenium start --timeout 60
 ```
