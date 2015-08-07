@@ -2,7 +2,7 @@
     "name": "fonsecas72/selenium-handler",
     "type": "library",
     "description": "Get, Start & Stop selenium server",
-    "keywords": ["selenium", "handle", "get", "start"],
+    "keywords": ["selenium", "handle", "get", "start", "download"],
     "license": "MIT",
     "authors": [
         {
