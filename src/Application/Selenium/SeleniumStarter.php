@@ -70,7 +70,7 @@ class SeleniumStarter
             $cmd = $xvfbCmd.' '.$cmd;
         }
 
-        if (!empty($this->seleniumOptions->getSeleniumExtraArguments())) {
+        if ($this->seleniumOptions->getSeleniumExtraArguments()) {
             foreach ($this->seleniumOptions->getSeleniumExtraArguments() as $optionName => $optionValue) {
                 $cmd .= ' -'.$optionName.' '.$optionValue;
             }
