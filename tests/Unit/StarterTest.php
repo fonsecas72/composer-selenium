@@ -73,6 +73,9 @@ class StarterTest extends \PHPUnit_Framework_TestCase
     public function testNotReadableThrowsException()
     {
         $jarLocation = __DIR__.'/../fixtures/selenium-no-permissions.jar';
+
+        chmod($jarLocation, 100);
+
         $this->seleniumOptions->expects($this->any())->method('getSeleniumQuery')->willReturn('not_empty');
         $this->seleniumOptions->expects($this->any())->method('getSeleniumUrl')->willReturn('not_empty');
         $this->seleniumOptions->expects($this->any())->method('getSeleniumJarLocation')->willReturn($jarLocation);
