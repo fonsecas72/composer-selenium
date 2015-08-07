@@ -4,55 +4,43 @@ namespace BeubiQA\Application\Selenium;
 
 use GuzzleHttp\Client;
 use Symfony\Component\Console\Helper\ProgressBar;
+use BeubiQA\Application\Selenium\Options\SeleniumDownloaderOptions;
 
 class SeleniumDownloader
 {
     /** @var Client */
     protected $httpClient;
-    
     /** @var ProgressBar */
     protected $progressBar;
-
-    /**
-     *
-     * @param Client $httpClient
-     */
-    public function __construct(Client $httpClient)
+    /** @var SeleniumDownloaderOptions */
+    protected $seleniumOptions;
+    public function __construct(SeleniumDownloaderOptions $seleniumOptions, Client $httpClient)
     {
+        $this->seleniumOptions = $seleniumOptions;
         $this->httpClient = $httpClient;
     }
-
-    /**
-     *
-     * @param ProgressBar $progressBar
-     */
     public function setProgressBar(ProgressBar $progressBar)
     {
         $this->progressBar = $progressBar;
     }
 
-    /**
-     *
-     * @param array $options
-     * @throws \RuntimeException
-     */
-    public function download($options)
+    public function download()
     {
-        if (!is_writable(dirname($options['selenium-destination']))) {
+        $destinationPath = $this->seleniumOptions->getSeleniumDestination();
+        if (!is_dir($destinationPath)) {
+            mkdir($destinationPath, 0777, true);
+        }
+        if (!is_writable($destinationPath)) {
             throw new \RuntimeException(
-                'Not enough permissions in '.$options['selenium-destination'].". \nTry with sudo."
+                'Not enough permissions in '.$destinationPath.". \nTry with sudo."
             );
         }
-        if (!is_dir($options['selenium-destination'])) {
-            mkdir($options['selenium-destination'], 0777, true);
-        }
-        $outputFile = $options['selenium-destination'].'selenium-server-standalone.jar';
+        $outputFile = $destinationPath.'/selenium-server-standalone.jar';
         if (is_file($outputFile)) {
             throw new \RuntimeException('File already exists. '.$outputFile);
         }
 
-        $downloadUrl = $this->getSeleniumDownloadURL($options['selenium-version']);
-        $this->downloadFile($downloadUrl, $outputFile);
+        $this->downloadFile($this->seleniumOptions->getSeleniumDownloadUrl(), $outputFile);
 
         if (!file_exists($outputFile)) {
             throw new \RuntimeException('Something wrong happent. The selenium file does not exists. '.$outputFile);
@@ -61,37 +49,36 @@ class SeleniumDownloader
     
     /**
      *
-     * @param string $version e.g. "2.44"
-     * @return string
-     */
-    private function getSeleniumDownloadURL($version)
-    {
-        // TODO: match version with a list of valid versions and add a checksum later
-        $server = 'http://selenium-release.storage.googleapis.com';
-        $filename = 'selenium-server-standalone-'.$version.'.0.jar';
-        return $server.'/'.$version.'/'.$filename;
-    }
-
-    /**
-     *
      * @param string $url
      * @param string $saveTo
      */
     private function downloadFile($url, $saveTo)
     {
         if ($this->progressBar) {
-            $emitter = $this->httpClient->getEmitter();
-            $emitter->on('before', function(\GuzzleHttp\Event\BeforeEvent $event) {
-                echo $event->getRequest();
-            });
-            $emitter->once('progress', function(\GuzzleHttp\Event\ProgressEvent $event) {
-                $this->progressBar->start($event->downloadSize);
-            });
-            $emitter->on('progress', function(\GuzzleHttp\Event\ProgressEvent $event) {
-                $this->progressBar->setProgress($event->downloaded);
-            });
+            $this->setDownloadWithProgressBar();
         }
-
         $this->httpClient->get($url, ['save_to' => $saveTo]);
+    }
+    
+    private function setDownloadWithProgressBar()
+    {
+        $emitter = $this->httpClient->getEmitter();
+        $emitter->on('before', function(\GuzzleHttp\Event\BeforeEvent $event) {
+            echo $event->getRequest();
+        });
+        $emitter->once('progress', function(\GuzzleHttp\Event\ProgressEvent $event) {
+            $this->progressBar->start($event->downloadSize);
+        });
+        $emitter->on('progress', function(\GuzzleHttp\Event\ProgressEvent $event) {
+            $this->progressBar->setProgress($event->downloaded);
+        });
+    }
+    /**
+     *
+     * @return SeleniumDownloaderOptions
+     */
+    public function getDownloaderOptions()
+    {
+        return $this->seleniumOptions;
     }
 }

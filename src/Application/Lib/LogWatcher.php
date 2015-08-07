@@ -1,30 +1,29 @@
 <?php
 
-namespace BeubiQA\Application\Selenium;
+namespace BeubiQA\Application\Lib;
 
-class SeleniumLogWatcher
+class LogWatcher
 {
 
     /**
      *
-     * @param array $options
+     * @param array $logPath
      */
-    public function watch($options)
+    public function watch($logPath, $stringToEcho)
     {
-        $file = $options['log-location'];
-        $this->checkLogPermissions($file);
+        $this->checkLogPermissions($logPath);
         $size = 0;
         while (true) {
             clearstatcache();
-            $currentSize = filesize($file);
+            $currentSize = filesize($logPath);
             if ($size === $currentSize) {
                 usleep(500);
                 continue;
             }
-            $fh = fopen($file, 'r');
+            $fh = fopen($logPath, 'r');
             fseek($fh, $size);
             while ($line = fgets($fh)) {
-                if (strpos($line, $options['follow']) !== false) {
+                if (strpos($line, $stringToEcho) !== false) {
                     echo $line;
                 }
             }

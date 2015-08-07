@@ -2,34 +2,32 @@
 
 namespace BeubiQA\Application\Selenium;
 
-use BeubiQA\Application\Selenium\SeleniumStarter;
-use BeubiQA\Application\Selenium\SeleniumStopper;
-use BeubiQA\Application\Selenium\SeleniumDownloader;
-use BeubiQA\Application\Selenium\SeleniumLogWatcher;
+use BeubiQA\Application\Selenium;
+use BeubiQA\Application\Lib\LogWatcher;
 
 class SeleniumHandler
 {
-    /** @var SeleniumStarter  */
+    /** @var Selenium\SeleniumStarter  */
     protected $seleniumStarter;
-    /** @var SeleniumStopper  */
+    /** @var Selenium\SeleniumStopper  */
     protected $seleniumStopper;
-    /** @var SeleniumDownloader  */
+    /** @var Selenium\SeleniumDownloader  */
     protected $seleniumDownloader;
-    /** @var SeleniumLogWatcher  */
+    /** @var LogWatcher  */
     protected $seleniumLogWatcher;
 
     /**
      *
-     * @param SeleniumStarter $seleniumStarter
-     * @param SeleniumStopper $seleniumStopper
-     * @param SeleniumDownloader $seleniumDownloader
-     * @param SeleniumLogWatcher $seleniumLogWatcher
+     * @param Selenium\SeleniumStarter $seleniumStarter
+     * @param Selenium\SeleniumStopper $seleniumStopper
+     * @param Selenium\SeleniumDownloader $seleniumDownloader
+     * @param LogWatcher $seleniumLogWatcher
      */
     public function __construct(
-        SeleniumStarter $seleniumStarter,
-        SeleniumStopper $seleniumStopper,
-        SeleniumDownloader $seleniumDownloader,
-        SeleniumLogWatcher $seleniumLogWatcher
+        Selenium\SeleniumStarter $seleniumStarter,
+        Selenium\SeleniumStopper $seleniumStopper,
+        Selenium\SeleniumDownloader $seleniumDownloader,
+        LogWatcher $seleniumLogWatcher
     ) {
         $this->seleniumStarter = $seleniumStarter;
         $this->seleniumStopper = $seleniumStopper;
@@ -39,38 +37,44 @@ class SeleniumHandler
 
     /**
      *
-     * @param array $options
-     * @return string
+     * @return Selenium\SeleniumStarter
      */
-    public function start($options)
+    public function getStarter()
     {
-        return $this->seleniumStarter->start($options);
+        return $this->seleniumStarter;
     }
     /**
      *
-     * @param array $options
-     * @return string|null
+     * @return Selenium\SeleniumStopper
      */
-    public function stop($options)
+    public function getStopper()
     {
-        return $this->seleniumStopper->stop($options);
+        return $this->seleniumStopper;
     }
     /**
      *
-     * @param array $options
-     * @return string|null
+     * @return Selenium\SeleniumDownloader
      */
-    public function download($options)
+    public function getDownloader()
     {
-        return $this->seleniumDownloader->download($options);
+        return $this->seleniumDownloader;
     }
-    /**
-     *
-     * @param array $options
-     * @return string|null
-     */
-    public function watch($options)
+
+    
+    public function start()
     {
-        return $this->seleniumLogWatcher->watch($options);
+        $this->seleniumStarter->start();
+    }
+    public function stop()
+    {
+        $this->seleniumStopper->stop();
+    }
+    public function download()
+    {
+        $this->seleniumDownloader->download();
+    }
+    public function watch()
+    {
+        $this->seleniumLogWatcher->watch();
     }
 }

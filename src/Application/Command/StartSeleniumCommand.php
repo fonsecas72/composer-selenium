@@ -23,7 +23,7 @@ class StartSeleniumCommand extends Command
         $this->seleniumHandler = $seleniumHandler;
         parent::__construct('start');
     }
-    
+
     protected function configure()
     {
         $this
@@ -32,7 +32,8 @@ class StartSeleniumCommand extends Command
             'selenium-location',
             'l',
             InputOption::VALUE_REQUIRED,
-            'Set a custom selenium jar location'
+            'Set a custom selenium jar location',
+            './selenium-server-standalone.jar'
         )
         ->addOption(
             'xvfb',
@@ -79,46 +80,42 @@ class StartSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $options = $this->getHandlerOptionsFromInput($input);
-        $startCmd = $this->seleniumHandler->start($options);
+        $starter = $this->seleniumHandler->getStarter();
+        $this->setStarterOptionsFromInput($input);
+        $starter->start();
+        $output->writeln(PHP_EOL, true);
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
-            $output->write($startCmd);
+            $output->writeln($starter->getStartCommand(), true);
         }
-        if ($options['follow']) {
-            $output->writeln(PHP_EOL);
-            $this->seleniumHandler->watch($options);
-        }
-        $output->writeln(PHP_EOL.'Done');
+        $output->writeln('Done', true);
     }
 
-
-    /**
-     *
-     * @param InputInterface $input
-     * @return array
-     */
-    private function getHandlerOptionsFromInput(InputInterface $input)
+    private function setStarterOptionsFromInput(InputInterface $input)
     {
-        $options = [];
-        $options['selenium-extra-options'] = [];
-        $options['selenium-location']   = $input->getOption('selenium-location') ?: './selenium-server-standalone.jar';
-        $options['xvfb']                = $input->getOption('xvfb');
-        $options['follow']              = $input->getOption('follow');
-        $options['timeout']             = $input->getOption('timeout');
-        $options['log-location']        = $input->getOption('log-location');
-        $options['port']                = 4444;
-
-        foreach ($input->getOption('selextra') as $extraOption) {
-            $explode = explode('=', $extraOption);
-            $optionName = $explode[0];
-            $value = $explode[1];
-            if ($optionName == 'port') {
-                $options['port'] = $value;
+        $starter = $this->seleniumHandler->getStarter();
+        $starter->getResponseWaitter()->setTimeout($input->getOption('timeout'));
+        $starterOptions = $starter->getStartOptions();
+        $starterOptions->setSeleniumLogLocation($input->getOption('log-location'));
+        $starterOptions->setSeleniumJarLocation($input->getOption('selenium-location'));
+        if ($input->getOption('xvfb')) {
+            $starterOptions->enabledXvfb();
+        }
+        $this->processSeleniumExtraArguments($input->getOption('selextra'));
+    }
+    private function processSeleniumExtraArguments(array $cmdExtraArgs)
+    {
+        $starterOptions = $this->seleniumHandler->getStarter()->getStartOptions();
+        $extraArgs = [];
+        foreach ($cmdExtraArgs as $cmdExtraArgString) {
+            $resultArray = explode('=', $cmdExtraArgString);
+            $argName = $resultArray[0];
+            $argValue = $resultArray[1];
+            if ($argName === 'port') {
+                $starterOptions->setSeleniumPort($argValue);
                 continue;
             }
-            $options['selenium-extra-options'][$optionName] = $value;
+            $extraArgs[$argName] = $argValue;
         }
-
-        return $options;
+        $starterOptions->setSeleniumExtraArguments($extraArgs);
     }
 }

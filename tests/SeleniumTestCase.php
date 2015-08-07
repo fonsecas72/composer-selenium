@@ -2,18 +2,15 @@
 
 namespace BeubiQA\Tests;
 
-use BeubiQA\Application\Command\StartSeleniumCommand;
-use BeubiQA\Application\Command\StopSeleniumCommand;
-use BeubiQA\Application\Selenium\SeleniumDownloader;
-use BeubiQA\Application\Selenium\SeleniumHandler;
-use BeubiQA\Application\Selenium\SeleniumLogWatcher;
-use BeubiQA\Application\Selenium\SeleniumStarter;
-use BeubiQA\Application\Selenium\SeleniumStopper;
-use BeubiQA\Application\Selenium\SeleniumWaitter;
+use BeubiQA\Application\Command;
+use BeubiQA\Application\Selenium;
+use BeubiQA\Application\Lib;
+
 use GuzzleHttp\Client;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ExecutableFinder;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -23,20 +20,24 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $httpClient = new Client();
+        $seleniumStarterOptions = new Selenium\Options\SeleniumStartOptions();
         $process = new Process('');
-        $waitter = new SeleniumWaitter($httpClient);
-        $stopper = new SeleniumStopper($waitter, $httpClient);
-        $logWatcher = new SeleniumLogWatcher();
-        $starter = new SeleniumStarter(
-            $process,
-            $waitter,
-            new \Symfony\Component\Process\ExecutableFinder()
-        );
-        $downloader = new SeleniumDownloader($httpClient);
-        $this->handler = new SeleniumHandler($starter, $stopper, $downloader, $logWatcher);
+        $exeFinder = new ExecutableFinder();
+        $httpClient = new Client();
+        $waiter = new Lib\ResponseWaitter($httpClient);
+        $starter = new Selenium\SeleniumStarter($seleniumStarterOptions, $process, $waiter, $exeFinder);
 
-        $stopCmd = new StopSeleniumCommand($this->handler);
+        $seleniumOptions = new Selenium\Options\SeleniumStopOptions();
+        $stopper = new Selenium\SeleniumStopper($seleniumOptions, $waiter, $httpClient);
+        
+        $seleniumOptions = new Selenium\Options\SeleniumDownloaderOptions();
+        $downloader = new Selenium\SeleniumDownloader($seleniumOptions, $httpClient);
+
+        $logWatcher = new Lib\LogWatcher();
+
+        $this->handler = new Selenium\SeleniumHandler($starter, $stopper, $downloader, $logWatcher);
+
+        $stopCmd = new Command\StopSeleniumCommand($this->handler);
         $stopCmdTester = new CommandTester($stopCmd);
         try {
             $stopCmdTester->execute([]);
@@ -65,7 +66,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     
     protected $seleniumJarLocation = 'bin/selenium-server-standalone.jar';
     protected $seleniumBasicCommand = '/usr/bin/java -jar bin/selenium-server-standalone.jar';
-    protected $seleniumJarDir = 'bin/';
+    protected $seleniumJarDir = './bin';
     
     /**
      *
@@ -81,7 +82,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         $output = [];
         $output['verbosity'] = OutputInterface::VERBOSITY_VERY_VERBOSE;
 
-        $startCmd = new StartSeleniumCommand($this->handler);
+        $startCmd = new Command\StartSeleniumCommand($this->handler);
         $startCmdTester = new CommandTester($startCmd);
         $startCmdTester->execute($input, $output);
         

@@ -31,13 +31,15 @@ class DownloadSeleniumCommand extends Command
             'selenium-version',
             's',
             InputOption::VALUE_REQUIRED,
-            'Set a custom selenium version'
+            'Set a custom selenium version',
+            '2.44'
         )
         ->addOption(
             'selenium-destination',
             'd',
             InputOption::VALUE_REQUIRED,
-            'Set a custom selenium destination directory'
+            'Set a custom selenium destination directory',
+            '.'
         )
         ->setDescription('Downloads selenium server');
     }
@@ -50,10 +52,15 @@ class DownloadSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $options = [];
-        $options['selenium-destination']  = $input->getOption('selenium-destination') ?: './';
-        $options['selenium-version']      = $input->getOption('selenium-version') ?: '2.44';
-        $this->seleniumHandler->download($options);
-        $output->writeln("\nDone");
+        $this->setDownloaderOptionsFromInput($input);
+        $this->seleniumHandler->download();
+        $output->writeln(PHP_EOL, true);
+        $output->writeln('Done');
+    }
+    private function setDownloaderOptionsFromInput(InputInterface $input)
+    {
+        $downloaderOptions = $this->seleniumHandler->getDownloader()->getDownloaderOptions();
+        $downloaderOptions->setSeleniumDestination($input->getOption('selenium-destination'));
+        $downloaderOptions->setSeleniumVersion($input->getOption('selenium-version'));
     }
 }

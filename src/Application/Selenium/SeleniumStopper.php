@@ -2,51 +2,64 @@
 
 namespace BeubiQA\Application\Selenium;
 
-use BeubiQA\Application\Selenium\SeleniumWaitter;
+use BeubiQA\Application\Lib\ResponseWaitter;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
+use BeubiQA\Application\Selenium\Options\SeleniumStopOptions;
 
 class SeleniumStopper
 {
-    /** @var SeleniumWaitter */
-    protected $seleniumWaitter;
+    /** @var ResponseWaitter */
+    private $responseWaitter;
     
     /** @var Client */
-    protected $httpClient;
+    private $httpClient;
+    
+    /** @var SeleniumStopOptions */
+    private $seleniumOptions;
 
-    /**
-     *
-     * @param SeleniumWaitter $seleniumWaitter
-     * @param Client $httpClient
-     */
-    public function __construct(SeleniumWaitter $seleniumWaitter, Client $httpClient)
+    public function __construct(SeleniumStopOptions $seleniumOptions , ResponseWaitter $responseWaitter, Client $httpClient)
     {
-        $this->seleniumWaitter = $seleniumWaitter;
+        $this->seleniumOptions = $seleniumOptions;
+        $this->responseWaitter = $responseWaitter;
         $this->httpClient = $httpClient;
     }
 
-    /**
-     *
-     * @param array $options
-     */
-    public function stop($options)
+    public function stop()
     {
-        $this->sendShutdownCmd($options['port']);
-        $this->seleniumWaitter->waitForSeleniumStop($options);
+        $this->sendShutdownCmd($this->seleniumOptions->getSeleniumPort());
+        $this->responseWaitter->waitUntilNotAvailable(
+            $this->seleniumOptions->getSeleniumUrl(),
+            $this->seleniumOptions->getSeleniumQuery()
+        );
     }
 
-    /**
-     *
-     * @param int $port
-     * @throws \RuntimeException
-     */
-    private function sendShutdownCmd($port)
+    private function sendShutdownCmd()
     {
-        $url = 'http://localhost:'.$port.'/selenium-server/driver/';
         try {
-            $this->httpClient->get($url, ['exceptions' => false, 'query' => ['cmd' => 'shutDownSeleniumServer']]);
+            $this->httpClient->get(
+                $this->seleniumOptions->getSeleniumStopUrl(),
+                $this->seleniumOptions->getSeleniumStopOptions()
+            );
         } catch (ConnectException $exc) {
             throw new \RuntimeException($exc->getMessage().PHP_EOL.'Probably selenium is already stopped.');
         }
+    }
+    
+    /**
+     *
+     * @return SeleniumStopOptions
+     */
+    public function getStopOptions()
+    {
+        return $this->seleniumOptions;
+    }
+    /**
+     *
+     * @return ResponseWaitter
+     */
+    public function getResponseWaitter()
+    {
+        return $this->responseWaitter;
     }
 }

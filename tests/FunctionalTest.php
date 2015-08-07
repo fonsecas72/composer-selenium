@@ -21,7 +21,7 @@ class FunctionalTest extends SeleniumTestCase
     }
     /**
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage File already exists. bin/selenium-server-standalone.jar
+     * @expectedExceptionMessage File already exists. ./bin/selenium-server-standalone.jar
      */
     public function test_Get_Will_Download_a_File()
     {

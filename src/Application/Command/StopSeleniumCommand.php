@@ -51,10 +51,19 @@ class StopSeleniumCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $options = [];
-        $options['timeout'] = $input->getOption('timeout');
-        $options['port'] = $input->getOption('port');
-        $this->seleniumHandler->stop($options);
+        $this->setStopperOptionsFromInput($input);
+        $this->seleniumHandler->stop();
+        $output->writeln(PHP_EOL, true);
         $output->writeln("\nDone");
+    }
+    /**
+     *
+     * @param InputInterface $input
+     */
+    private function setStopperOptionsFromInput(InputInterface $input)
+    {
+        $stopper = $this->seleniumHandler->getStopper();
+        $stopper->getStopOptions()->setSeleniumPort($input->getOption('port'));
+        $stopper->getResponseWaitter()->setTimeout($input->getOption('timeout'));
     }
 }
