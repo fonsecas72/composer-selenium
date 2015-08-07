@@ -19,6 +19,50 @@ With Composer:
 
 ### Usage
 
+
+### Library
+
+You can create a downloader, a starter, a stopper and a watcher.
+E.g. to create a starter:
+
+```
+$seleniumStarterOptions = new SeleniumStartOptions();
+$process = new Process('');
+$exeFinder = new ExecutableFinder();
+$waiter = new ResponseWaitter(new Client());
+$starter = new SeleniumStarter($seleniumStarterOptions, $process, $waiter, $exeFinder);
+```
+
+Then you can call:
+```
+$starter->start();
+```
+And it will just work.
+
+Of course, you can also change de default settings.
+This is done by calling options classes that each one if this has.
+E.g. to change a setting for the starter:
+
+```
+// timeout is changed in the "waitter" class:
+$starter->getResponseWaitter()->setTimeout($input->getOption('timeout'));
+// to set a specific selenium location you do:
+$starterOptions = $starter->getStartOptions();
+$starterOptions->setSeleniumJarLocation($input->getOption('selenium-location'));
+// to enable xvfb:
+$starterOptions->enabledXvfb();
+```
+
+**see the tests and the built-in commands for more examples, or open an issue**
+
+You can also create a "handler" that will allow you to start, stop, download, etc. through one single class.
+```
+$this->handler = new SeleniumHandler($starter, $stopper, $downloader, $logWatcher);
+```
+
+
+### Built-in commands 
+
 #### get selenium
 `(it will download to current directory by default)`
 
