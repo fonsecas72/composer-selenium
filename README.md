@@ -25,7 +25,7 @@ With Composer:
 You can create a downloader, a starter, a stopper and a watcher.
 E.g. to create a starter:
 
-```
+```php
 $seleniumStarterOptions = new SeleniumStartOptions();
 $process = new Process('');
 $exeFinder = new ExecutableFinder();
@@ -34,7 +34,7 @@ $starter = new SeleniumStarter($seleniumStarterOptions, $process, $waiter, $exeF
 ```
 
 Then you can call:
-```
+```php
 $starter->start();
 ```
 And it will just work.
@@ -43,7 +43,7 @@ Of course, you can also change de default settings.
 This is done by calling options classes that each one if this has.
 E.g. to change a setting for the starter:
 
-```
+```php
 // timeout is changed in the "waitter" class:
 $starter->getResponseWaitter()->setTimeout($input->getOption('timeout'));
 // to set a specific selenium location you do:
@@ -54,7 +54,7 @@ $starterOptions->enabledXvfb();
 ```
 
 You can also create a "handler" that will allow you to start, stop, download, etc. through one single class.
-```
+```php
 $this->handler = new SeleniumHandler($starter, $stopper, $downloader, $logWatcher);
 ```
 
