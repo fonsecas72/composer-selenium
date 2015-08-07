@@ -53,12 +53,12 @@ $starterOptions->setSeleniumJarLocation($input->getOption('selenium-location'));
 $starterOptions->enabledXvfb();
 ```
 
-**see the tests and the built-in commands for more examples, or open an issue**
-
 You can also create a "handler" that will allow you to start, stop, download, etc. through one single class.
 ```
 $this->handler = new SeleniumHandler($starter, $stopper, $downloader, $logWatcher);
 ```
+
+**see the tests and the built-in commands for more examples, or open an issue**
 
 
 ### Built-in commands 
