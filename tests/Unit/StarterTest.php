@@ -74,7 +74,7 @@ class StarterTest extends \PHPUnit_Framework_TestCase
     {
         $jarLocation = __DIR__.'/../fixtures/selenium-no-permissions.jar';
 
-        chmod($jarLocation, 100);
+        chmod($jarLocation, 000);
 
         $this->seleniumOptions->expects($this->any())->method('getSeleniumQuery')->willReturn('not_empty');
         $this->seleniumOptions->expects($this->any())->method('getSeleniumUrl')->willReturn('not_empty');
