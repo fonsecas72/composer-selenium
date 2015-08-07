@@ -44,17 +44,22 @@ class SeleniumStarter
     
     public function start()
     {
-        if (!is_readable($this->seleniumOptions->getSeleniumJarLocation())) {
-            throw new \RuntimeException('Selenium jar not readable - '.$this->seleniumOptions->getSeleniumJarLocation());
+        $seleniumUrl = $this->seleniumOptions->getSeleniumUrl();
+        $seleniumQuery = $this->seleniumOptions->getSeleniumQuery();
+        $seleniumJarLocation = $this->seleniumOptions->getSeleniumJarLocation();
+        if (!$seleniumUrl || !$seleniumQuery || !$seleniumJarLocation) {
+            throw new \LogicException('Url, Query and Selenium Jar Location is mandatory and Jar Location should point to a .jar file.');
         }
-
+        if (!is_file($seleniumJarLocation)) {
+            throw new \RuntimeException('Selenium jar is not a file');
+        }
+        if (!is_readable($seleniumJarLocation)) {
+            throw new \RuntimeException('Selenium jar not readable - '.$seleniumJarLocation);
+        }
         $this->setStartCommand($this->createStartCommand());
         $this->process->setCommandLine($this->getStartCommand());
         $this->process->start();
-        $this->responseWaitter->waitUntilAvailable(
-            $this->seleniumOptions->getSeleniumUrl(),
-            $this->seleniumOptions->getSeleniumQuery()
-        );
+        $this->responseWaitter->waitUntilAvailable($seleniumUrl, $seleniumQuery);
     }
 
     /**
@@ -69,14 +74,22 @@ class SeleniumStarter
             $xvfbCmd = 'DISPLAY=:1 '.$this->exeFinder->find('xvfb-run').' --auto-servernum --server-num=1';
             $cmd = $xvfbCmd.' '.$cmd;
         }
-
-        if ($this->seleniumOptions->getSeleniumExtraArguments()) {
-            foreach ($this->seleniumOptions->getSeleniumExtraArguments() as $optionName => $optionValue) {
+        $seleniumExtraArgs = $this->seleniumOptions->getSeleniumExtraArguments();
+        if ($seleniumExtraArgs) {
+            foreach ($seleniumExtraArgs as $optionName => $optionValue) {
                 $cmd .= ' -'.$optionName.' '.$optionValue;
             }
         }
+        $seleniumPort = $this->seleniumOptions->getSeleniumPort();
+        if ($seleniumPort) {
+            $cmd .=' -port '.$seleniumPort;
+        }
+        $logLocation = $this->seleniumOptions->getSeleniumLogLocation();
+        if ($logLocation) {
+            $cmd .=' > '.$logLocation.' 2> '.$logLocation;
+        }
         
-        return $cmd.' > '.$this->seleniumOptions->getSeleniumLogLocation().' 2> '.$this->seleniumOptions->getSeleniumLogLocation();
+        return $cmd;
     }
     
     /**

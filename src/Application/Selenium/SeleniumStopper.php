@@ -27,19 +27,26 @@ class SeleniumStopper
 
     public function stop()
     {
+        $seleniumPort = $this->seleniumOptions->getSeleniumPort();
+        $seleniumUrl = $this->seleniumOptions->getSeleniumUrl();
+        $seleniumQuery = $this->seleniumOptions->getSeleniumQuery();
+        $seleniumShutdownUrl = $this->seleniumOptions->getSeleniumShutdownUrl();
+        $seleniumShutdownOptions = $this->seleniumOptions->getSeleniumShutDownOptions();
+        
+        if (!$seleniumShutdownOptions || !$seleniumShutdownUrl || !$seleniumPort || !$seleniumUrl || !$seleniumQuery) {
+            throw new \LogicException('Port, Url, Shutdown Url, Shutdown Options, and Query are mandatory.');
+        }
+        
         $this->sendShutdownCmd($this->seleniumOptions->getSeleniumPort());
-        $this->responseWaitter->waitUntilNotAvailable(
-            $this->seleniumOptions->getSeleniumUrl(),
-            $this->seleniumOptions->getSeleniumQuery()
-        );
+        $this->responseWaitter->waitUntilNotAvailable($seleniumUrl, $seleniumQuery);
     }
 
     private function sendShutdownCmd()
     {
         try {
             $this->httpClient->get(
-                $this->seleniumOptions->getSeleniumStopUrl(),
-                $this->seleniumOptions->getSeleniumStopOptions()
+                $this->seleniumOptions->getSeleniumShutdownUrl(),
+                $this->seleniumOptions->getSeleniumShutDownOptions()
             );
         } catch (ConnectException $exc) {
             throw new \RuntimeException($exc->getMessage().PHP_EOL.'Probably selenium is already stopped.');

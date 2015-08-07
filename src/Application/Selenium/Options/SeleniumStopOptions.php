@@ -4,24 +4,24 @@ namespace BeubiQA\Application\Selenium\Options;
 
 class SeleniumStopOptions extends SeleniumOptions
 {
-    protected $seleniumStopUrl = 'http://localhost:%d/selenium-server/driver/';
-    protected $seleniumStopOptions = ['query' => ['cmd' => 'shutDownSeleniumServer']];
+    protected $seleniumShutdownUrl = 'http://localhost:%d/selenium-server/driver/';
+    protected $seleniumShutdownOptions = ['query' => ['cmd' => 'shutDownSeleniumServer']];
         
     public function setSeleniumStopUrl($url)
     {
-        $this->seleniumStopUrl = $url;
+        $this->seleniumShutdownUrl = $url;
     }
-    public function getSeleniumStopUrl()
+    public function getSeleniumShutdownUrl()
     {
-        return sprintf($this->seleniumStopUrl, $this->getSeleniumPort());
+        return sprintf($this->seleniumShutdownUrl, $this->getSeleniumPort());
     }
 
     public function setSeleniumStopOptions($options)
     {
-        $this->seleniumStopOptions = $options;
+        $this->seleniumShutdownOptions = $options;
     }
-    public function getSeleniumStopOptions()
+    public function getSeleniumShutDownOptions()
     {
-        return $this->seleniumStopOptions;
+        return $this->seleniumShutdownOptions;
     }
 }

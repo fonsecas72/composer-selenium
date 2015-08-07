@@ -65,7 +65,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
     }
     
     protected $seleniumJarLocation = 'bin/selenium-server-standalone.jar';
-    protected $seleniumBasicCommand = '/usr/bin/java -jar bin/selenium-server-standalone.jar';
+    protected $seleniumBasicCommand = '/usr/bin/java -jar bin/selenium-server-standalone.jar -port 4444';
     protected $seleniumJarDir = './bin';
     
     /**

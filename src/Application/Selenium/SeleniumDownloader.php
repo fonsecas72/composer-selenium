@@ -27,6 +27,10 @@ class SeleniumDownloader
     public function download()
     {
         $destinationPath = $this->seleniumOptions->getSeleniumDestination();
+        $downloadUrl = $this->seleniumOptions->getSeleniumDownloadUrl();
+        if (!$destinationPath || !$downloadUrl) {
+            throw new \LogicException('Destination and Download Url are mandatory.');
+        }
         if (!is_dir($destinationPath)) {
             mkdir($destinationPath, 0777, true);
         }
@@ -40,7 +44,7 @@ class SeleniumDownloader
             throw new \RuntimeException('File already exists. '.$outputFile);
         }
 
-        $this->downloadFile($this->seleniumOptions->getSeleniumDownloadUrl(), $outputFile);
+        $this->downloadFile($downloadUrl, $outputFile);
 
         if (!file_exists($outputFile)) {
             throw new \RuntimeException('Something wrong happent. The selenium file does not exists. '.$outputFile);

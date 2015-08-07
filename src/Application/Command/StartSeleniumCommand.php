@@ -110,10 +110,6 @@ class StartSeleniumCommand extends Command
             $resultArray = explode('=', $cmdExtraArgString);
             $argName = $resultArray[0];
             $argValue = $resultArray[1];
-            if ($argName === 'port') {
-                $starterOptions->setSeleniumPort($argValue);
-                continue;
-            }
             $extraArgs[$argName] = $argValue;
         }
         $starterOptions->setSeleniumExtraArguments($extraArgs);

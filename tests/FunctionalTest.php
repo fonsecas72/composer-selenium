@@ -38,7 +38,7 @@ class FunctionalTest extends SeleniumTestCase
     }
     /**
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage Selenium jar not readable
+     * @expectedExceptionMessage Selenium jar is not a file
      * @depends test_Get_Will_Download_a_File
      */
     public function test_Start_Does_Not_Exists()
