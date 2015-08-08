@@ -7,7 +7,7 @@ Download, Start &amp; Stop Selenium Server with PHP >= 5.4 as a package or by co
 
 [![Latest Stable Version](https://poser.pugx.org/fonsecas72/selenium-handler/v/stable.svg)](https://packagist.org/packages/fonsecas72/selenium-handler) [![Total Downloads](https://poser.pugx.org/fonsecas72/selenium-handler/downloads.svg)](https://packagist.org/packages/fonsecas72/selenium-handler) [![Daily Downloads](https://poser.pugx.org/fonsecas72/selenium-handler/d/daily.png)](https://packagist.org/packages/fonsecas72/selenium-handler)  [![Latest Unstable Version](https://poser.pugx.org/fonsecas72/selenium-handler/v/unstable.svg)](https://packagist.org/packages/fonsecas72/selenium-handler) [![License](https://poser.pugx.org/fonsecas72/selenium-handler/license.svg)](https://packagist.org/packages/fonsecas72/selenium-handler)
 
-This package was written to avoid to download selenium by hand and to avoid those complex commands to make selenium to start. It also allows you to use it with-in your own package.
+This package was written to avoid downloading selenium by hand and to avoid those complex commands to make selenium to start. It also allows you to use it with-in your own package.
 
 ### Installation
 
