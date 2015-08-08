@@ -1,6 +1,6 @@
 # Selenium Handler
 
-Download, Start &amp; Stop Selenium Server with PHP >= 5.4 as a package or by command line.
+Download, Start &amp; Stop [Selenium Server](http://www.seleniumhq.org/) with PHP >= 5.4 as a package or by command line.
 
 [![Build Status](https://travis-ci.org/fonsecas72/selenium-handler.svg)](https://travis-ci.org/fonsecas72/selenium-handler)   [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fonsecas72/selenium-handler/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fonsecas72/selenium-handler/?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/5502ac704a1064db0e0004ba/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5502ac704a1064db0e0004ba)
