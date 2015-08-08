@@ -2,8 +2,8 @@
 
 namespace BeubiQA\Tests\Unit;
 
-use BeubiQA\Application\Selenium;
 use BeubiQA\Application\Lib;
+use BeubiQA\Application\Selenium;
 
 class StopperTest extends \PHPUnit_Framework_TestCase
 {

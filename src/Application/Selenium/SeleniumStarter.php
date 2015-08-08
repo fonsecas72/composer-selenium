@@ -82,11 +82,11 @@ class SeleniumStarter
         }
         $seleniumPort = $this->seleniumOptions->getSeleniumPort();
         if ($seleniumPort) {
-            $cmd .=' -port '.$seleniumPort;
+            $cmd .= ' -port '.$seleniumPort;
         }
         $logLocation = $this->seleniumOptions->getSeleniumLogLocation();
         if ($logLocation) {
-            $cmd .=' > '.$logLocation.' 2> '.$logLocation;
+            $cmd .= ' > '.$logLocation.' 2> '.$logLocation;
         }
         
         return $cmd;
