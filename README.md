@@ -1,14 +1,13 @@
 # Selenium Handler
 
-Get, Start &amp; Stop selenium server
-
-You can use this package to get, start and stop selenium server.
+Download, Start &amp; Stop Selenium Server with PHP >= 5.4 as a package or by command line.
 
 [![Build Status](https://travis-ci.org/fonsecas72/selenium-handler.svg)](https://travis-ci.org/fonsecas72/selenium-handler)   [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fonsecas72/selenium-handler/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fonsecas72/selenium-handler/?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/5502ac704a1064db0e0004ba/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5502ac704a1064db0e0004ba)
 
 [![Latest Stable Version](https://poser.pugx.org/fonsecas72/selenium-handler/v/stable.svg)](https://packagist.org/packages/fonsecas72/selenium-handler) [![Total Downloads](https://poser.pugx.org/fonsecas72/selenium-handler/downloads.svg)](https://packagist.org/packages/fonsecas72/selenium-handler) [![Daily Downloads](https://poser.pugx.org/fonsecas72/selenium-handler/d/daily.png)](https://packagist.org/packages/fonsecas72/selenium-handler)  [![Latest Unstable Version](https://poser.pugx.org/fonsecas72/selenium-handler/v/unstable.svg)](https://packagist.org/packages/fonsecas72/selenium-handler) [![License](https://poser.pugx.org/fonsecas72/selenium-handler/license.svg)](https://packagist.org/packages/fonsecas72/selenium-handler)
 
+This package was written to avoid to download selenium by hand and to avoid those complex commands to make selenium to start. It also allows you to use it with-in your own package.
 
 ### Installation
 
