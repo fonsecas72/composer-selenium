@@ -60,10 +60,14 @@ class SeleniumHandler
         return $this->seleniumDownloader;
     }
 
-    
     public function start()
     {
-        $this->seleniumStarter->start();
+        if(!$this->getDownloader()->isJarAlreadyDownloaded()){
+            $this->download();
+        }
+        if(!$this->getStarter()->isSeleniumAvailable()){
+            $this->seleniumStarter->start();
+        }
     }
     public function stop()
     {

@@ -17,7 +17,7 @@ class ResponseWaitter
     private $waitInterval = 25000; // 0.025 seconds
     public function __construct(Client $httpClient, $timeoutSeconds = 30000000, $waitInterval = 25000)
     {
-        $this->timeout = $this->setTimeout($timeoutSeconds);
+        $this->setTimeout($timeoutSeconds);
         $this->waitInterval = $waitInterval;
         $this->httpClient = $httpClient;
     }
@@ -53,24 +53,31 @@ class ResponseWaitter
     {
         $this->timeLeft -= $this->waitInterval;
         if ($this->timeLeft < 0) {
-            throw new Timeout('Timeout of '.$this->timeout.' seconds.');
+            throw new Timeout('Timeout of '.var_export($this->timeout, true).' seconds.');
         }
         usleep($this->waitInterval);
         $this->progressBarSetProgress();
     }
-    
+
+    public function isAvailable($url, $requestOptions)
+    {
+        try {
+            $this->httpClient->get($url, $requestOptions);
+        } catch (ConnectException $e) {
+            return false;
+        }
+        return true;
+    }
+
     public function waitUntilAvailable($url, $requestOptions)
     {
         $this->progressBarStart();
         $this->timeLeft = $this->timeout;
         while (true) {
             $this->updateTimeleft();
-            try {
-                $this->httpClient->get($url, $requestOptions);
-            } catch (ConnectException $e) {
-                continue; // try again
+            if ($this->isAvailable($url, $requestOptions)){
+                break;
             }
-            break;
         }
         $this->progressBarFinish();
     }
@@ -80,9 +87,7 @@ class ResponseWaitter
         $this->timeLeft = $this->timeout;
         while (true) {
             $this->updateTimeleft();
-            try {
-                $this->httpClient->get($url, $requestOptions);
-            } catch (ConnectException $e) {
+            if (!$this->isAvailable($url, $requestOptions)){
                 break;
             }
         }

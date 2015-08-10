@@ -56,10 +56,18 @@ class SeleniumStarter
         if (!is_readable($seleniumJarLocation)) {
             throw new \RuntimeException('Selenium jar not readable - '.$seleniumJarLocation);
         }
+        if ($this->isSeleniumAvailable()) {
+            throw new \RuntimeException('Selenium was already started');
+        }
         $this->setStartCommand($this->createStartCommand());
         $this->process->setCommandLine($this->getStartCommand());
         $this->process->start();
         $this->responseWaitter->waitUntilAvailable($seleniumUrl, $seleniumQuery);
+    }
+
+    public function isSeleniumAvailable()
+    {
+        return $this->responseWaitter->isAvailable($this->seleniumOptions->getSeleniumUrl(), $this->seleniumOptions->getSeleniumQuery());
     }
 
     /**

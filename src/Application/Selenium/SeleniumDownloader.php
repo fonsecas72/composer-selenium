@@ -24,12 +24,25 @@ class SeleniumDownloader
         $this->progressBar = $progressBar;
     }
 
+    public function isJarAlreadyDownloaded()
+    {
+        return is_file($this->getJarPath());
+    }
+
+    public function getJarPath()
+    {
+        return $this->seleniumOptions->getSeleniumDestination().'/selenium-server-standalone.jar';
+    }
+    
     public function download()
     {
         $destinationPath = $this->seleniumOptions->getSeleniumDestination();
         $downloadUrl = $this->seleniumOptions->getSeleniumDownloadUrl();
         if (!$destinationPath || !$downloadUrl) {
             throw new \LogicException('Destination and Download Url are mandatory.');
+        }
+        if ($this->isJarAlreadyDownloaded()) {
+            throw new \RuntimeException('File already exists. '.$this->getJarPath());
         }
         if (!is_dir($destinationPath)) {
             mkdir($destinationPath, 0777, true);
@@ -39,13 +52,8 @@ class SeleniumDownloader
                 'Not enough permissions in '.$destinationPath.". \nTry with sudo."
             );
         }
-        $outputFile = $destinationPath.'/selenium-server-standalone.jar';
-        if (is_file($outputFile)) {
-            throw new \RuntimeException('File already exists. '.$outputFile);
-        }
-
+        $outputFile = $this->getJarPath();
         $this->downloadFile($downloadUrl, $outputFile);
-
         if (!file_exists($outputFile)) {
             throw new \RuntimeException('Something wrong happent. The selenium file does not exists. '.$outputFile);
         }
