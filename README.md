@@ -13,13 +13,13 @@ This package was written to avoid downloading selenium by hand and to avoid thos
 
 With Composer:
 ```
-  composer require --dev fonsecas72/selenium-handler dev-master
+  composer require --dev fonsecas72/selenium-handler
 ```
 
 ### Usage
 
 
-### Library
+### In your application
 
 You can create a downloader, a starter, a stopper and a watcher.
 E.g. to create a starter:
