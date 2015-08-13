@@ -6,7 +6,7 @@ class SeleniumStopOptions extends SeleniumOptions
 {
     protected $seleniumShutdownUrl = 'http://localhost:%d/selenium-server/driver/';
     protected $seleniumShutdownOptions = ['query' => ['cmd' => 'shutDownSeleniumServer']];
-        
+
     public function setSeleniumStopUrl($url)
     {
         $this->seleniumShutdownUrl = $url;

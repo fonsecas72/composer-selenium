@@ -1,6 +1,6 @@
 <?php
 
-namespace BeubiQA\Tests\Unit;
+namespace BeubiQA\tests\Unit;
 
 use BeubiQA\Application\Selenium;
 
@@ -10,7 +10,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase
     private $downloader;
     private $httpClient;
     private $seleniumOptions;
-    
+
     public function setup()
     {
         $this->httpClient = $this->getMockBuilder('GuzzleHttp\Client')->getMock();
@@ -48,7 +48,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException RuntimeException
      * @expectedExceptionMessage  The selenium file does not exists. /tmp/selenium-server-standalone.jar
-     */    
+     */
     public function testDownloaderDownloads()
     {
         $destinationFolder = '/tmp';

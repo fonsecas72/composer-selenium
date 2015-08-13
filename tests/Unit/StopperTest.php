@@ -1,15 +1,14 @@
 <?php
 
-namespace BeubiQA\Tests\Unit;
+namespace BeubiQA\tests\Unit;
 
-use BeubiQA\Application\Lib;
 use BeubiQA\Application\Selenium;
 
 class StopperTest extends \PHPUnit_Framework_TestCase
 {
     /** @var Selenium\SeleniumStopper  */
     private $stopper;
-    
+
     public function setup()
     {
         $this->httpClient = $this->getMockBuilder('GuzzleHttp\Client')->getMock();
@@ -80,7 +79,7 @@ class StopperTest extends \PHPUnit_Framework_TestCase
         $this->seleniumOptions->expects($this->any())->method('getSeleniumShutDownOptions')->willReturn($shutOptions);
 
         $this->httpClient->expects($this->any())->method('get')->with('shutUrl', 'shutOptions');
-        
+
         $this->stopper->stop();
     }
 }

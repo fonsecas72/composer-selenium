@@ -2,11 +2,11 @@
 
 namespace BeubiQA\Application\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Command\Command;
 use BeubiQA\Application\Selenium\SeleniumHandler;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ShowSeleniumCommand extends Command
 {
@@ -41,16 +41,16 @@ class ShowSeleniumCommand extends Command
     }
 
     /**
-     *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws \RuntimeException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $options = [];
-        $options['follow']              = $input->getOption('follow');
-        $options['log-location']        = $input->getOption('log-location');
+        $options['follow'] = $input->getOption('follow');
+        $options['log-location'] = $input->getOption('log-location');
 
         $output->writeln('Displaying '.$options['log-location'].' file:'.PHP_EOL);
         $this->seleniumHandler->watch($options);

@@ -2,7 +2,6 @@
 
 namespace BeubiQA\Application\Selenium\Options;
 
-
 class SeleniumOptions
 {
     protected $seleniumJarLocation = './selenium-server-standalone.jar';
@@ -10,7 +9,7 @@ class SeleniumOptions
     protected $seleniumPort = 4444;
     protected $seleniumUrl = 'http://localhost:%d/selenium-server/driver/';
     protected $seleniumQuery = ['query' => ['cmd' => 'getLogMessages']];
-    
+
     public function setSeleniumUrl($url)
     {
         $this->seleniumUrl = $url;

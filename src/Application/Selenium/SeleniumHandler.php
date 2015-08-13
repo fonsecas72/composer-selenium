@@ -2,8 +2,8 @@
 
 namespace BeubiQA\Application\Selenium;
 
-use BeubiQA\Application\Selenium;
 use BeubiQA\Application\Lib\LogWatcher;
+use BeubiQA\Application\Selenium;
 
 class SeleniumHandler
 {
@@ -17,11 +17,10 @@ class SeleniumHandler
     protected $seleniumLogWatcher;
 
     /**
-     *
-     * @param Selenium\SeleniumStarter $seleniumStarter
-     * @param Selenium\SeleniumStopper $seleniumStopper
+     * @param Selenium\SeleniumStarter    $seleniumStarter
+     * @param Selenium\SeleniumStopper    $seleniumStopper
      * @param Selenium\SeleniumDownloader $seleniumDownloader
-     * @param LogWatcher $seleniumLogWatcher
+     * @param LogWatcher                  $seleniumLogWatcher
      */
     public function __construct(
         Selenium\SeleniumStarter $seleniumStarter,
@@ -36,7 +35,6 @@ class SeleniumHandler
     }
 
     /**
-     *
      * @return Selenium\SeleniumStarter
      */
     public function getStarter()
@@ -44,7 +42,6 @@ class SeleniumHandler
         return $this->seleniumStarter;
     }
     /**
-     *
      * @return Selenium\SeleniumStopper
      */
     public function getStopper()
@@ -52,7 +49,6 @@ class SeleniumHandler
         return $this->seleniumStopper;
     }
     /**
-     *
      * @return Selenium\SeleniumDownloader
      */
     public function getDownloader()
@@ -62,10 +58,10 @@ class SeleniumHandler
 
     public function start()
     {
-        if(!$this->getDownloader()->isJarAlreadyDownloaded()){
+        if (!$this->getDownloader()->isJarAlreadyDownloaded()) {
             $this->download();
         }
-        if(!$this->getStarter()->isSeleniumAvailable()){
+        if (!$this->getStarter()->isSeleniumAvailable()) {
             $this->seleniumStarter->start();
         }
     }
