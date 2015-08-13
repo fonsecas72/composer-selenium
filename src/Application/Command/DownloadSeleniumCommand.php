@@ -2,11 +2,11 @@
 
 namespace BeubiQA\Application\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Command\Command;
 use BeubiQA\Application\Selenium\SeleniumHandler;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class DownloadSeleniumCommand extends Command
 {
@@ -14,7 +14,6 @@ class DownloadSeleniumCommand extends Command
     protected $seleniumHandler;
 
     /**
-     *
      * @param SeleniumHandler $seleniumHandler
      */
     public function __construct(SeleniumHandler $seleniumHandler)
@@ -22,7 +21,7 @@ class DownloadSeleniumCommand extends Command
         $this->seleniumHandler = $seleniumHandler;
         parent::__construct('start');
     }
-    
+
     protected function configure()
     {
         $this
@@ -45,9 +44,9 @@ class DownloadSeleniumCommand extends Command
     }
 
     /**
-     *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @throws \RuntimeException
      */
     protected function execute(InputInterface $input, OutputInterface $output)

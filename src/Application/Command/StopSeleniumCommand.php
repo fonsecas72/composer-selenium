@@ -2,11 +2,11 @@
 
 namespace BeubiQA\Application\Command;
 
+use BeubiQA\Application\Selenium\SeleniumHandler;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
-use BeubiQA\Application\Selenium\SeleniumHandler;
 
 class StopSeleniumCommand extends Command
 {
@@ -14,7 +14,6 @@ class StopSeleniumCommand extends Command
     protected $seleniumHandler;
 
     /**
-     *
      * @param SeleniumHandler $seleniumHandler
      */
     public function __construct(SeleniumHandler $seleniumHandler)
@@ -45,8 +44,7 @@ class StopSeleniumCommand extends Command
     }
 
     /**
-     *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -57,7 +55,6 @@ class StopSeleniumCommand extends Command
         $output->writeln("\nDone");
     }
     /**
-     *
      * @param InputInterface $input
      */
     private function setStopperOptionsFromInput(InputInterface $input)

@@ -1,16 +1,15 @@
 <?php
 
-namespace BeubiQA\Tests;
+namespace BeubiQA\tests;
 
 use BeubiQA\Application\Command;
-use BeubiQA\Application\Selenium;
 use BeubiQA\Application\Lib;
-
+use BeubiQA\Application\Selenium;
 use GuzzleHttp\Client;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
 
 class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -29,7 +28,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
 
         $seleniumOptions = new Selenium\Options\SeleniumStopOptions();
         $stopper = new Selenium\SeleniumStopper($seleniumOptions, $waiter, $httpClient);
-        
+
         $seleniumOptions = new Selenium\Options\SeleniumDownloaderOptions();
         $downloader = new Selenium\SeleniumDownloader($seleniumOptions, $httpClient);
 
@@ -60,23 +59,23 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $status = curl_exec($ch);
         curl_close($ch);
-        
+
         return $status;
     }
-    
+
     protected $seleniumJarLocation = 'bin/selenium-server-standalone.jar';
     protected $seleniumBasicCommand = '/usr/bin/java -jar bin/selenium-server-standalone.jar -port 4444';
     protected $seleniumJarDir = './bin';
-    
+
     /**
-     *
      * @param array $extraOptions
      * @param array $inpuOptions
+     *
      * @return string
      */
     protected function startSelenium(
-        array $extraOptions = array(),
-        array $inpuOptions = array('-l' => 'bin/selenium-server-standalone.jar')
+        array $extraOptions = [],
+        array $inpuOptions = ['-l' => 'bin/selenium-server-standalone.jar']
     ) {
         $input = array_merge($inpuOptions, $extraOptions);
         $output = [];
@@ -85,7 +84,7 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         $startCmd = new Command\StartSeleniumCommand($this->handler);
         $startCmdTester = new CommandTester($startCmd);
         $startCmdTester->execute($input, $output);
-        
+
         return $startCmdTester->getDisplay();
     }
 }
