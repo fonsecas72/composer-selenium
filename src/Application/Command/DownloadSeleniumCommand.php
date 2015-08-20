@@ -31,7 +31,7 @@ class DownloadSeleniumCommand extends Command
             's',
             InputOption::VALUE_REQUIRED,
             'Set a custom selenium version',
-            '2.44'
+            '2.44.0'
         )
         ->addOption(
             'selenium-destination',
