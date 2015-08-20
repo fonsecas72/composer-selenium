@@ -4,17 +4,19 @@ namespace BeubiQA\Application\Selenium\Options;
 
 class SeleniumDownloaderOptions extends SeleniumOptions
 {
-
+    // example full url: http://selenium-release.storage.googleapis.com/2.47/selenium-server-standalone-2.47.1.jar
     protected $seleniumDestination = '.';
     protected $seleniumVersion = '2.44';
     protected $seleniumDownloadUrl = 'http://selenium-release.storage.googleapis.com/%s/%s';
     
     public function getSeleniumDownloadUrl()
     {
+        $versionCut = substr($this->getSeleniumVersion(), 0, -2);
+        
         return sprintf(
             $this->seleniumDownloadUrl,
-            $this->getSeleniumVersion(),
-            'selenium-server-standalone-'.$this->getSeleniumVersion().'.0.jar'
+            $versionCut,
+            'selenium-server-standalone-'.$this->getSeleniumVersion().'.jar'
         );
     }
 
