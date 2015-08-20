@@ -12,7 +12,7 @@ class SeleniumDownloaderOptions extends SeleniumOptions
     public function getSeleniumDownloadUrl()
     {
         $versionCut = substr($this->getSeleniumVersion(), 0, -2);
-        
+
         return sprintf(
             $this->seleniumDownloadUrl,
             $versionCut,
