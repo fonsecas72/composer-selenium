@@ -1,8 +1,7 @@
 <?php
 
-namespace BeubiQA\Tests\Unit;
+namespace BeubiQA\tests\Unit;
 
-use BeubiQA\Application\Lib;
 use BeubiQA\Application\Selenium;
 
 class StarterTest extends \PHPUnit_Framework_TestCase
@@ -93,7 +92,7 @@ class StarterTest extends \PHPUnit_Framework_TestCase
         $this->process->expects($this->any())->method('setCommandLine')->with($javaLocation.' -jar '.$jarLocation);
         $this->starter->start();
     }
-    
+
     public function testStarterStartsWithXvfb()
     {
         $jarLocation = __DIR__.'/../fixtures/selenium-dummy.jar';
@@ -136,5 +135,4 @@ class StarterTest extends \PHPUnit_Framework_TestCase
         $this->process->expects($this->any())->method('setCommandLine')->with($javaLocation.' -jar '.$jarLocation.' -port '.$port);
         $this->starter->start();
     }
-
 }

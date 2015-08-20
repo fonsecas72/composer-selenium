@@ -3,9 +3,9 @@
 namespace BeubiQA\Application\Selenium;
 
 use BeubiQA\Application\Lib\ResponseWaitter;
+use BeubiQA\Application\Selenium\Options\SeleniumStartOptions;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
-use BeubiQA\Application\Selenium\Options\SeleniumStartOptions;
 
 class SeleniumStarter
 {
@@ -19,11 +19,10 @@ class SeleniumStarter
     private $seleniumOptions;
     /**  @var string */
     private $startCommand;
-    
+
     /**
-     *
-     * @param Process $process
-     * @param ResponseWaitter $responseWaitter
+     * @param Process          $process
+     * @param ResponseWaitter  $responseWaitter
      * @param ExecutableFinder $exeFinder
      */
     public function __construct(SeleniumStartOptions $seleniumOptions, Process $process, ResponseWaitter $responseWaitter, ExecutableFinder $exeFinder)
@@ -41,7 +40,7 @@ class SeleniumStarter
     {
         return $this->startCommand;
     }
-    
+
     public function start()
     {
         $seleniumUrl = $this->seleniumOptions->getSeleniumUrl();
@@ -71,8 +70,8 @@ class SeleniumStarter
     }
 
     /**
-     *
      * @param array $options
+     *
      * @return string
      */
     private function createStartCommand()
@@ -96,12 +95,11 @@ class SeleniumStarter
         if ($logLocation) {
             $cmd .= ' > '.$logLocation.' 2> '.$logLocation;
         }
-        
+
         return $cmd;
     }
-    
+
     /**
-     *
      * @return SeleniumStartOptions
      */
     public function getStartOptions()
@@ -109,7 +107,6 @@ class SeleniumStarter
         return $this->seleniumOptions;
     }
     /**
-     *
      * @return ResponseWaitter
      */
     public function getResponseWaitter()

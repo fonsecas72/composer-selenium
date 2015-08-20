@@ -4,9 +4,7 @@ namespace BeubiQA\Application\Lib;
 
 class LogWatcher
 {
-
     /**
-     *
      * @param array $logPath
      */
     public function watch($logPath, $stringToEcho)
@@ -32,8 +30,8 @@ class LogWatcher
         }
     }
     /**
-     *
      * @param string $file
+     *
      * @throws \RuntimeException
      */
     private function checkLogPermissions($file)

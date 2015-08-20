@@ -2,10 +2,10 @@
 
 namespace BeubiQA\Application\Lib;
 
+use BeubiQA\Application\Exception\Timeout;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use Symfony\Component\Console\Helper\ProgressBar;
-use BeubiQA\Application\Exception\Timeout;
 
 class ResponseWaitter
 {
@@ -21,7 +21,7 @@ class ResponseWaitter
         $this->waitInterval = $waitInterval;
         $this->httpClient = $httpClient;
     }
-    
+
     public function getTimeout()
     {
         return $this->timeout;
@@ -66,6 +66,7 @@ class ResponseWaitter
         } catch (ConnectException $e) {
             return false;
         }
+
         return true;
     }
 
@@ -75,7 +76,7 @@ class ResponseWaitter
         $this->timeLeft = $this->timeout;
         while (true) {
             $this->updateTimeleft();
-            if ($this->isAvailable($url, $requestOptions)){
+            if ($this->isAvailable($url, $requestOptions)) {
                 break;
             }
         }
@@ -87,7 +88,7 @@ class ResponseWaitter
         $this->timeLeft = $this->timeout;
         while (true) {
             $this->updateTimeleft();
-            if (!$this->isAvailable($url, $requestOptions)){
+            if (!$this->isAvailable($url, $requestOptions)) {
                 break;
             }
         }

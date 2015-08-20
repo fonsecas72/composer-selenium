@@ -2,9 +2,9 @@
 
 namespace BeubiQA\Application\Selenium;
 
+use BeubiQA\Application\Selenium\Options\SeleniumDownloaderOptions;
 use GuzzleHttp\Client;
 use Symfony\Component\Console\Helper\ProgressBar;
-use BeubiQA\Application\Selenium\Options\SeleniumDownloaderOptions;
 
 class SeleniumDownloader
 {
@@ -33,7 +33,7 @@ class SeleniumDownloader
     {
         return $this->seleniumOptions->getSeleniumDestination().'/selenium-server-standalone.jar';
     }
-    
+
     public function download()
     {
         $destinationPath = $this->seleniumOptions->getSeleniumDestination();
@@ -58,9 +58,8 @@ class SeleniumDownloader
             throw new \RuntimeException('Something wrong happent. The selenium file does not exists. '.$outputFile);
         }
     }
-    
+
     /**
-     *
      * @param string $url
      * @param string $saveTo
      */
@@ -71,22 +70,21 @@ class SeleniumDownloader
         }
         $this->httpClient->get($url, ['save_to' => $saveTo]);
     }
-    
+
     private function setDownloadWithProgressBar()
     {
         $emitter = $this->httpClient->getEmitter();
-        $emitter->on('before', function(\GuzzleHttp\Event\BeforeEvent $event) {
+        $emitter->on('before', function (\GuzzleHttp\Event\BeforeEvent $event) {
             echo $event->getRequest();
         });
-        $emitter->once('progress', function(\GuzzleHttp\Event\ProgressEvent $event) {
+        $emitter->once('progress', function (\GuzzleHttp\Event\ProgressEvent $event) {
             $this->progressBar->start($event->downloadSize);
         });
-        $emitter->on('progress', function(\GuzzleHttp\Event\ProgressEvent $event) {
+        $emitter->on('progress', function (\GuzzleHttp\Event\ProgressEvent $event) {
             $this->progressBar->setProgress($event->downloaded);
         });
     }
     /**
-     *
      * @return SeleniumDownloaderOptions
      */
     public function getDownloaderOptions()

@@ -8,7 +8,7 @@ class SeleniumDownloaderOptions extends SeleniumOptions
     protected $seleniumDestination = '.';
     protected $seleniumVersion = '2.44';
     protected $seleniumDownloadUrl = 'http://selenium-release.storage.googleapis.com/%s/%s';
-    
+
     public function getSeleniumDownloadUrl()
     {
         $versionCut = substr($this->getSeleniumVersion(), 0, -2);
@@ -24,8 +24,6 @@ class SeleniumDownloaderOptions extends SeleniumOptions
     {
         $this->seleniumDownloadUrl = $seleniumDownloadUrl;
     }
-
-
 
     public function getSeleniumDestination()
     {
@@ -43,7 +41,4 @@ class SeleniumDownloaderOptions extends SeleniumOptions
     {
         $this->seleniumVersion = $seleniumVersion;
     }
-
-
-    
 }

@@ -2,12 +2,11 @@
 
 namespace BeubiQA\Application\Selenium\Options;
 
-
 class SeleniumStartOptions extends SeleniumOptions
 {
     protected $seleniumExtraArguments = [];
     protected $isXvfbEnabled = false;
-        
+
     /**
      * @param array $args
      */

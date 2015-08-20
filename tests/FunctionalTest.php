@@ -1,9 +1,9 @@
 <?php
 
-namespace BeubiQA\Tests;
+namespace BeubiQA\tests;
 
-use BeubiQA\Tests\SeleniumTestCase;
 use BeubiQA\Application\Command\DownloadSeleniumCommand;
+use BeubiQA\Tests\SeleniumTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class FunctionalTest extends SeleniumTestCase
@@ -15,9 +15,9 @@ class FunctionalTest extends SeleniumTestCase
     public function test_Get_Without_Permissions()
     {
         $getCmdTester = new CommandTester(new DownloadSeleniumCommand($this->handler));
-        $getCmdTester->execute(array(
-                '-d' => '/opt/'
-        ));
+        $getCmdTester->execute([
+                '-d' => '/opt/',
+        ]);
     }
     /**
      * @expectedException \RuntimeException
@@ -43,7 +43,7 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Start_Does_Not_Exists()
     {
-        $this->startSelenium(array(), array('-l' => 'no_selenium.jar'));
+        $this->startSelenium([], ['-l' => 'no_selenium.jar']);
     }
     /**
      * @expectedException \RuntimeException
@@ -52,15 +52,16 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Start_Cmd_With_Short_Timeout()
     {
-        $this->startSelenium(array('-t' => 0));
+        $this->startSelenium(['-t' => 0]);
     }
     private function exeGetCmd()
     {
         $getCmd = new DownloadSeleniumCommand($this->handler);
         $getCmdTester = new CommandTester($getCmd);
-        $getCmdTester->execute(array(
-                '-d' => $this->seleniumJarDir
-        ));
+        $getCmdTester->execute([
+                '-d' => $this->seleniumJarDir,
+        ]);
+
         return $getCmdTester->getDisplay();
     }
 
@@ -79,7 +80,7 @@ class FunctionalTest extends SeleniumTestCase
      */
     public function test_Start_Cmd_XVFB()
     {
-        $output = $this->startSelenium(array('--xvfb' => true));
+        $output = $this->startSelenium(['--xvfb' => true]);
         $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 '.$this->seleniumBasicCommand, $output);
         $this->assertSeleniumIsRunning();
     }
