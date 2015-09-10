@@ -78,7 +78,7 @@ class SeleniumStarter
     {
         $cmd = $this->exeFinder->find('java').' -jar '.$this->seleniumOptions->getSeleniumJarLocation();
         if ($this->seleniumOptions->isXvfbEnabled()) {
-            $xvfbCmd = 'DISPLAY=:1 '.$this->exeFinder->find('xvfb-run').' --auto-servernum --server-num=1';
+            $xvfbCmd = 'DISPLAY=:1 '.$this->exeFinder->find('xvfb-run').' --server-args=":1 -screen 0 1280x800x24 -ac +extension RANDR"';
             $cmd = $xvfbCmd.' '.$cmd;
         }
         $seleniumExtraArgs = $this->seleniumOptions->getSeleniumExtraArguments();
