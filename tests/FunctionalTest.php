@@ -81,7 +81,7 @@ class FunctionalTest extends SeleniumTestCase
     public function test_Start_Cmd_XVFB()
     {
         $output = $this->startSelenium(['--xvfb' => true]);
-        $this->assertContains('DISPLAY=:1 /usr/bin/xvfb-run --auto-servernum --server-num=1 '.$this->seleniumBasicCommand, $output);
+        $this->assertContains('DISPLAY=:21 '.$this->seleniumBasicCommand, $output);
         $this->assertSeleniumIsRunning();
     }
 }

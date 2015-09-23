@@ -78,7 +78,7 @@ class SeleniumStarter
     {
         $cmd = $this->exeFinder->find('java').' -jar '.$this->seleniumOptions->getSeleniumJarLocation();
         if ($this->seleniumOptions->isXvfbEnabled()) {
-            $xvfbCmd = 'DISPLAY=:21 ';
+            $xvfbCmd = 'DISPLAY=:21';
             $cmd = $xvfbCmd.' '.$cmd;
         }
         $seleniumExtraArgs = $this->seleniumOptions->getSeleniumExtraArguments();
