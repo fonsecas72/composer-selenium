@@ -97,14 +97,13 @@ class StarterTest extends \PHPUnit_Framework_TestCase
     {
         $jarLocation = __DIR__.'/../fixtures/selenium-dummy.jar';
         $javaLocation = 'java-location';
-        $xvfbLocation = 'xvfb-location';
         $this->exeFinder->expects($this->at(0))->method('find')->with('java')->willReturn($javaLocation);
         $this->exeFinder->expects($this->at(1))->method('find')->with('xvfb-run')->willReturn($xvfbLocation);
         $this->seleniumOptions->expects($this->any())->method('getSeleniumQuery')->willReturn('not_empty');
         $this->seleniumOptions->expects($this->any())->method('getSeleniumUrl')->willReturn('not_empty');
         $this->seleniumOptions->expects($this->any())->method('getSeleniumJarLocation')->willReturn($jarLocation);
         $this->seleniumOptions->expects($this->any())->method('isXvfbEnabled')->willReturn(true);
-        $exceptedCmd = 'DISPLAY=:1 '.$xvfbLocation.' --auto-servernum --server-num=1 '.$javaLocation.' -jar '.$jarLocation;
+        $exceptedCmd = 'DISPLAY=:21 '.$javaLocation.' -jar '.$jarLocation;
         $this->process->expects($this->any())->method('setCommandLine')->with($exceptedCmd);
         $this->starter->start();
     }
