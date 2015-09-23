@@ -26,6 +26,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->downloader->download();
     }
+
     /**
      * @expectedException LogicException
      * @expectedExceptionMessage Destination and Download Url are mandatory.
@@ -35,6 +36,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase
         $this->seleniumOptions->expects($this->any())->method('getSeleniumDownloadUrl')->willReturn('some_url');
         $this->downloader->download();
     }
+
     /**
      * @expectedException LogicException
      * @expectedExceptionMessage Destination and Download Url are mandatory.

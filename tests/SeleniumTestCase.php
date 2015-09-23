@@ -45,14 +45,17 @@ class SeleniumTestCase extends \PHPUnit_Framework_TestCase
         }
         $this->assertSeleniumIsNotRunning();
     }
+
     protected function assertSeleniumIsRunning()
     {
         $this->assertNotFalse($this->getSeleniumStatus());
     }
+
     protected function assertSeleniumIsNotRunning()
     {
         $this->assertFalse($this->getSeleniumStatus());
     }
+
     protected function getSeleniumStatus()
     {
         $ch = curl_init('http://localhost:4444/selenium-server/driver/?cmd=getLogMessages');

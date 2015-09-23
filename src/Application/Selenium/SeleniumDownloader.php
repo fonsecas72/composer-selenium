@@ -14,11 +14,13 @@ class SeleniumDownloader
     protected $progressBar;
     /** @var SeleniumDownloaderOptions */
     protected $seleniumOptions;
+
     public function __construct(SeleniumDownloaderOptions $seleniumOptions, Client $httpClient)
     {
         $this->seleniumOptions = $seleniumOptions;
         $this->httpClient = $httpClient;
     }
+
     public function setProgressBar(ProgressBar $progressBar)
     {
         $this->progressBar = $progressBar;
@@ -84,6 +86,7 @@ class SeleniumDownloader
             $this->progressBar->setProgress($event->downloaded);
         });
     }
+
     /**
      * @return SeleniumDownloaderOptions
      */

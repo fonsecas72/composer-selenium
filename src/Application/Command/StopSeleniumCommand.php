@@ -54,6 +54,7 @@ class StopSeleniumCommand extends Command
         $output->writeln(PHP_EOL, true);
         $output->writeln("\nDone");
     }
+
     /**
      * @param InputInterface $input
      */

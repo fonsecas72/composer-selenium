@@ -29,14 +29,17 @@ class SeleniumDownloaderOptions extends SeleniumOptions
     {
         return $this->seleniumDestination;
     }
+
     public function setSeleniumDestination($seleniumDestination)
     {
         $this->seleniumDestination = $seleniumDestination;
     }
+
     public function getSeleniumVersion()
     {
         return $this->seleniumVersion;
     }
+
     public function setSeleniumVersion($seleniumVersion)
     {
         $this->seleniumVersion = $seleniumVersion;

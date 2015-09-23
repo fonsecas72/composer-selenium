@@ -29,6 +29,7 @@ class LogWatcher
             $size = $currentSize;
         }
     }
+
     /**
      * @param string $file
      *
