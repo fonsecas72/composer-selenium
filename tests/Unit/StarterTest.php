@@ -98,7 +98,6 @@ class StarterTest extends \PHPUnit_Framework_TestCase
         $jarLocation = __DIR__.'/../fixtures/selenium-dummy.jar';
         $javaLocation = 'java-location';
         $this->exeFinder->expects($this->at(0))->method('find')->with('java')->willReturn($javaLocation);
-        $this->exeFinder->expects($this->at(1))->method('find')->with('xvfb-run')->willReturn($xvfbLocation);
         $this->seleniumOptions->expects($this->any())->method('getSeleniumQuery')->willReturn('not_empty');
         $this->seleniumOptions->expects($this->any())->method('getSeleniumUrl')->willReturn('not_empty');
         $this->seleniumOptions->expects($this->any())->method('getSeleniumJarLocation')->willReturn($jarLocation);
