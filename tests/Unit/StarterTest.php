@@ -8,6 +8,7 @@ class StarterTest extends \PHPUnit_Framework_TestCase
 {
     /** @var Selenium\SeleniumStarter */
     protected $starter;
+
     public function setup()
     {
         $this->process = $this->getMockBuilder('Symfony\Component\Process\Process')
@@ -21,6 +22,7 @@ class StarterTest extends \PHPUnit_Framework_TestCase
         $this->seleniumOptions = $this->getMockBuilder('BeubiQA\Application\Selenium\Options\SeleniumStartOptions')->getMock();
         $this->starter = new Selenium\SeleniumStarter($this->seleniumOptions, $this->process, $this->waiter, $this->exeFinder);
     }
+
     /**
      * @expectedException LogicException
      * @expectedExceptionMessage Url, Query and Selenium Jar Location is mandatory and Jar Location should point to a .jar file.
@@ -41,6 +43,7 @@ class StarterTest extends \PHPUnit_Framework_TestCase
         $this->seleniumOptions->expects($this->any())->method('getSeleniumJarLocation')->willReturn($jarLocation);
         $this->starter->start();
     }
+
     /**
      * @expectedException LogicException
      * @expectedExceptionMessage Url, Query and Selenium Jar Location is mandatory and Jar Location should point to a .jar file.
@@ -65,6 +68,7 @@ class StarterTest extends \PHPUnit_Framework_TestCase
         $this->seleniumOptions->expects($this->any())->method('getSeleniumJarLocation')->willReturn($jarLocation);
         $this->starter->start();
     }
+
     /**
      * @expectedException RuntimeException
      * @expectedExceptionMessage Selenium jar not readable
@@ -120,6 +124,7 @@ class StarterTest extends \PHPUnit_Framework_TestCase
         $this->process->expects($this->any())->method('setCommandLine')->with($javaLocation.' -jar '.$jarLocation.' -port '.$port);
         $this->starter->start();
     }
+
     public function testStarterStartsWithPortByOptions()
     {
         $jarLocation = __DIR__.'/../fixtures/selenium-dummy.jar';

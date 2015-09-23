@@ -31,6 +31,7 @@ class StopperTest extends \PHPUnit_Framework_TestCase
         $this->seleniumOptions->expects($this->any())->method('getSeleniumShutDownOptions')->willReturn('not_empty');
         $this->stopper->stop();
     }
+
     /**
      * @expectedException LogicException
      * @expectedExceptionMessage Port, Url, Shutdown Url, Shutdown Options, and Query are mandatory.
@@ -43,6 +44,7 @@ class StopperTest extends \PHPUnit_Framework_TestCase
         $this->seleniumOptions->expects($this->any())->method('getSeleniumShutDownOptions')->willReturn('not_empty');
         $this->stopper->stop();
     }
+
     /**
      * @expectedException LogicException
      * @expectedExceptionMessage Port, Url, Shutdown Url, Shutdown Options, and Query are mandatory.
@@ -55,6 +57,7 @@ class StopperTest extends \PHPUnit_Framework_TestCase
         $this->seleniumOptions->expects($this->any())->method('getSeleniumShutDownOptions')->willReturn('not_empty');
         $this->stopper->stop();
     }
+
     /**
      * @expectedException LogicException
      * @expectedExceptionMessage Port, Url, Shutdown Url, Shutdown Options, and Query are mandatory.

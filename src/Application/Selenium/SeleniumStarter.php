@@ -32,10 +32,12 @@ class SeleniumStarter
         $this->responseWaitter = $responseWaitter;
         $this->exeFinder = $exeFinder;
     }
+
     private function setStartCommand($command)
     {
         $this->startCommand = $command;
     }
+
     public function getStartCommand()
     {
         return $this->startCommand;
@@ -106,6 +108,7 @@ class SeleniumStarter
     {
         return $this->seleniumOptions;
     }
+
     /**
      * @return ResponseWaitter
      */

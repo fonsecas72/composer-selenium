@@ -41,6 +41,7 @@ class SeleniumHandler
     {
         return $this->seleniumStarter;
     }
+
     /**
      * @return Selenium\SeleniumStopper
      */
@@ -48,6 +49,7 @@ class SeleniumHandler
     {
         return $this->seleniumStopper;
     }
+
     /**
      * @return Selenium\SeleniumDownloader
      */
@@ -65,14 +67,17 @@ class SeleniumHandler
             $this->seleniumStarter->start();
         }
     }
+
     public function stop()
     {
         $this->seleniumStopper->stop();
     }
+
     public function download()
     {
         $this->seleniumDownloader->download();
     }
+
     public function watch()
     {
         $this->seleniumLogWatcher->watch();

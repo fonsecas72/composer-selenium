@@ -15,6 +15,7 @@ class ResponseWaitter
     private $progressBar;
     private $timeout = 30000000;
     private $waitInterval = 25000; // 0.025 seconds
+
     public function __construct(Client $httpClient, $timeoutSeconds = 30000000, $waitInterval = 25000)
     {
         $this->setTimeout($timeoutSeconds);
@@ -36,14 +37,17 @@ class ResponseWaitter
     {
         $this->progressBar = $progressBar;
     }
+
     private function progressBarStart()
     {
         $this->progressBar ? $this->progressBar->start($this->timeout) : '';
     }
+
     private function progressBarSetProgress()
     {
         $this->progressBar ? $this->progressBar->setProgress($this->timeout - $this->timeLeft) : '';
     }
+
     private function progressBarFinish()
     {
         $this->progressBar ? $this->progressBar->finish() : '';
@@ -82,6 +86,7 @@ class ResponseWaitter
         }
         $this->progressBarFinish();
     }
+
     public function waitUntilNotAvailable($url, $requestOptions)
     {
         $this->progressBarStart();

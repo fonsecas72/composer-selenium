@@ -19,6 +19,7 @@ class FunctionalTest extends SeleniumTestCase
                 '-d' => '/opt/',
         ]);
     }
+
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage File already exists. ./bin/selenium-server-standalone.jar
@@ -36,6 +37,7 @@ class FunctionalTest extends SeleniumTestCase
         $this->assertContains('Skipping download as the file already exists.', $output);
         $this->assertContains('Done', $output);
     }
+
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Selenium jar is not a file
@@ -45,6 +47,7 @@ class FunctionalTest extends SeleniumTestCase
     {
         $this->startSelenium([], ['-l' => 'no_selenium.jar']);
     }
+
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Timeout
@@ -54,6 +57,7 @@ class FunctionalTest extends SeleniumTestCase
     {
         $this->startSelenium(['-t' => 0]);
     }
+
     private function exeGetCmd()
     {
         $getCmd = new DownloadSeleniumCommand($this->handler);

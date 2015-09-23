@@ -16,6 +16,7 @@ class SeleniumStartOptions extends SeleniumOptions
             $this->seleniumExtraArguments[$argName] = $argValue;
         }
     }
+
     /**
      * @return array
      */
@@ -23,6 +24,7 @@ class SeleniumStartOptions extends SeleniumOptions
     {
         return $this->seleniumExtraArguments;
     }
+
     /**
      * @param string $path
      */
@@ -30,6 +32,7 @@ class SeleniumStartOptions extends SeleniumOptions
     {
         $this->isXvfbEnabled = true;
     }
+
     /**
      * @return bool
      */

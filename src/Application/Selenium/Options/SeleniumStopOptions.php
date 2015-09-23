@@ -11,6 +11,7 @@ class SeleniumStopOptions extends SeleniumOptions
     {
         $this->seleniumShutdownUrl = $url;
     }
+
     public function getSeleniumShutdownUrl()
     {
         return sprintf($this->seleniumShutdownUrl, $this->getSeleniumPort());
@@ -20,6 +21,7 @@ class SeleniumStopOptions extends SeleniumOptions
     {
         $this->seleniumShutdownOptions = $options;
     }
+
     public function getSeleniumShutDownOptions()
     {
         return $this->seleniumShutdownOptions;

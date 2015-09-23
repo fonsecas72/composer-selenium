@@ -60,6 +60,7 @@ class SeleniumStopper
     {
         return $this->seleniumOptions;
     }
+
     /**
      * @return ResponseWaitter
      */

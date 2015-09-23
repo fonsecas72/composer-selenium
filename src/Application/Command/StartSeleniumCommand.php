@@ -100,6 +100,7 @@ class StartSeleniumCommand extends Command
         }
         $this->processSeleniumExtraArguments($input->getOption('selextra'));
     }
+
     private function processSeleniumExtraArguments(array $cmdExtraArgs)
     {
         $starterOptions = $this->seleniumHandler->getStarter()->getStartOptions();

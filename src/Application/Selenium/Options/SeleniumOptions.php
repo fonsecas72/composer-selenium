@@ -14,6 +14,7 @@ class SeleniumOptions
     {
         $this->seleniumUrl = $url;
     }
+
     public function getSeleniumUrl()
     {
         return sprintf($this->seleniumUrl, $this->getSeleniumPort());
@@ -26,6 +27,7 @@ class SeleniumOptions
     {
         $this->seleniumQuery = $query;
     }
+
     /**
      * @return string
      */
@@ -33,6 +35,7 @@ class SeleniumOptions
     {
         return $this->seleniumQuery;
     }
+
     /**
      * @param string $path
      */
@@ -40,6 +43,7 @@ class SeleniumOptions
     {
         $this->seleniumLogLocation = $path;
     }
+
     /**
      * @return string
      */
@@ -47,6 +51,7 @@ class SeleniumOptions
     {
         return $this->seleniumLogLocation;
     }
+
     /**
      * @param string $path
      */
@@ -54,6 +59,7 @@ class SeleniumOptions
     {
         $this->seleniumJarLocation = $path;
     }
+
     /**
      * @return string
      */
@@ -61,6 +67,7 @@ class SeleniumOptions
     {
         return $this->seleniumJarLocation;
     }
+
     /**
      * @param int $port
      */
@@ -68,6 +75,7 @@ class SeleniumOptions
     {
         $this->seleniumPort = $port;
     }
+
     /**
      * @return int
      */
