@@ -29,7 +29,7 @@ class FunctionalTest extends SeleniumTestCase
         is_file($this->seleniumJarLocation) ? unlink($this->seleniumJarLocation) : '';
         $output = $this->exeGetCmd();
         $this->assertFileExists($this->seleniumJarLocation);
-        $this->assertEquals('deb2a8d4f6b5da90fd38d1915459ced2e53eb201', sha1_file($this->seleniumJarLocation));
+        $this->assertEquals('b5f5a9c1589672dcc29f8b145c47aadf4f9cfc59', sha1_file($this->seleniumJarLocation));
         $this->assertContains('Done', $output);
 
         $output = $this->exeGetCmd();
