@@ -53,8 +53,7 @@ $container = new ContainerBuilder();
             ->addArgument(new Reference('http_client'));
         $container->register('downloader', 'BeubiQA\Application\Selenium\SeleniumDownloader')
             ->addArgument(new Reference('download-options'))
-            ->addArgument(new Reference('http_client'))
-            ->addMethodCall('setProgressBar', array(new Reference('progress_bar')));
+            ->addArgument(new Reference('http_client'));
         $container->register('log_watcher', 'BeubiQA\Application\Lib\LogWatcher');
 
     $container->register('selenium-handler', 'BeubiQA\Application\Selenium\SeleniumHandler')
