@@ -55,6 +55,7 @@ class DownloadSeleniumCommand extends Command
         $this->seleniumHandler->download();
         $output->writeln(PHP_EOL, true);
         $output->writeln('Done');
+        if (true) { }
     }
 
     private function setDownloaderOptionsFromInput(InputInterface $input)
